@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import './App.css';
 import HealthScreen from "./HealthScreen.tsx";
 import EquipmentPanel from './EquipmentScreen.tsx';
+import StatScreen from './StatScreen.tsx';
 
 function App() {
   const maxHealth = 40;
@@ -17,6 +18,14 @@ function App() {
   equipment["Back"] = "Backpack";
   equipment["Feet"] = "Leather boots";
   equipment["Cloak"] = null;
+  var stats = {};
+  stats["Armor Class"] = 16;
+  stats["Str"] = 18;
+  stats["Dex"] = 15;
+  stats["Con"] = 17;
+  stats["Int"] = 7;
+  stats["Wis"] = 8;
+  stats["Cha"] = 10;
   return (
     <div className="App">
       <header className="App-header">
@@ -38,6 +47,9 @@ function App() {
 
         <div>
           <EquipmentPanel equipment={equipment} />
+        </div>
+        <div>
+          <StatScreen stats={stats} />
         </div>
       </header>
     </div>
