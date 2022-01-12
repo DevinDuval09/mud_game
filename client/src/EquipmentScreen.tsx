@@ -1,9 +1,11 @@
 import React from "react";
 
+const noBullets = {listStyleType: "none"};
+
 function EquipmentSlot(props)
 {
     return(
-        <li>{props.slot}: {props.value}</li>
+        <li style={noBullets}>{props.slot}: {props.value}</li>
     )
 }
 

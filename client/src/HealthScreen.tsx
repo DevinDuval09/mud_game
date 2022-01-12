@@ -1,5 +1,7 @@
 import React from "react";
 
+const noBullets = {listStyleType: "none"};
+
 function ListHealth(props)
 {
     var col = "white";
@@ -7,7 +9,7 @@ function ListHealth(props)
     {
         col = "red";
     }
-    return <li style ={{color: col}}>{props.label}: {props.value}</li>
+    return <li style ={Object.assign({},{color: col}, {lineHeight: "100%"}, noBullets)}>{props.label}: {props.value}</li>
 }
 
 function HealthScreen(props)
