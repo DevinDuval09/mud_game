@@ -1,10 +1,24 @@
 import logo from './logo.svg';
 import './App.css';
 import HealthScreen from "./HealthScreen.tsx";
+import EquipmentPanel from './EquipmentScreen';
+import Equipment from './Equipment';
 
 function App() {
   const maxHealth = 40;
   const currentHealth = 10;
+  const equipment = new Equipment(
+                    Head= "Iron helmet",
+                    Torso= "Breastplate",
+                    Arms= null,
+                    MainHand= "Longsword",
+                    OffHand= "Shield",
+                    Legs= "Leather pants",
+                    Belt= "Leather belt",
+                    Back= "Backpack",
+                    Feet= "Leather boots",
+                    Cloak= null
+                  )
   return (
     <div className="App">
       <header className="App-header">
@@ -20,9 +34,12 @@ function App() {
         >
           Learn React
         </a>
-        <p>
+        <div>
           <HealthScreen maxHealth={maxHealth} currentHealth={currentHealth} />
-        </p>
+        </div>
+        <div>
+          <EquipmentPanel equipment={equipment} />
+        </div>
       </header>
     </div>
   );
