@@ -1,7 +1,10 @@
 import logo from './logo.svg';
 import './App.css';
+import HealthScreen from "./HealthScreen.tsx";
 
 function App() {
+  const maxHealth = 40;
+  const currentHealth = 10;
   return (
     <div className="App">
       <header className="App-header">
@@ -17,6 +20,9 @@ function App() {
         >
           Learn React
         </a>
+        <p>
+          <HealthScreen maxHealth={maxHealth} currentHealth={currentHealth} />
+        </p>
       </header>
     </div>
   );
