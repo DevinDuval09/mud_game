@@ -1,19 +1,5 @@
 import React from "react";
 
-
-  type Equipment ={
-                    Head: String,
-                    Torso: String,
-                    Arms?: String,
-                    MainHand: String,
-                    OffHand: String,
-                    Legs: String,
-                    Belt?: String,
-                    Back: String,
-                    Feet?: String,
-                    Cloak: String
-                  };
-
 function EquipmentSlot(props)
 {
     return(
@@ -21,11 +7,11 @@ function EquipmentSlot(props)
     )
 }
 
-function EquipmentPanel(equipment: Equipment)
+function EquipmentPanel(props)
 {
-    const labels = Object.keys(equipment);
-    labels.map((key) => 
-                   <EquipmentSlot slot={key} value={equipment[key]}  />);
+    var equipmentList = Object.keys(props.equipment);
+    var labels = equipmentList.map((key) => 
+                   <EquipmentSlot slot={key} value={props.equipment[key]}  />);
     return (
         <ul>
             {labels}
