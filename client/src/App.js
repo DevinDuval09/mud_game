@@ -19,13 +19,14 @@ function App() {
   equipment["Feet"] = "Leather boots";
   equipment["Cloak"] = null;
   var stats = {};
-  stats["Armor Class"] = 16;
   stats["Str"] = 18;
   stats["Dex"] = 15;
   stats["Con"] = 17;
   stats["Int"] = 7;
   stats["Wis"] = 8;
   stats["Cha"] = 10;
+  stats[""] = null;
+  stats["AC"] = 16;
   return (
     <div className="App">
       <header className="App-header">

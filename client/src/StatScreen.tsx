@@ -1,30 +1,65 @@
 
 import React from "react";
 
-const noBullets = {listStyleType: "none"};
-
 function bonusCalc(stat: String, score: number)
 {
-    if (stat === "Armor Class") return score;
+    if (stat === "AC") return null;
+    if (stat === "") return null;
     return Math.floor((score - 10) / 2)
 }
 
-function StatSlot(props)
+function StatHeaders()
 {
     return(
-        <li style={noBullets}>{props.slot}: {props.value} + "\t" {bonusCalc(props.slot, props.value)}</li>
+        <tr>
+            <th style={{textAlign: "center"}}>Ability</th>
+            <th style={{textAlign: "center"}}>Score</th>
+            <th style={{textAlign: "center"}}>Bonus</th>
+        </tr>
+    )
+}
+
+function StatLine(props)
+{
+    var slot = props.slot;
+    var score;
+    var bonus;
+
+    if (slot === "AC")
+    {
+        score = "";
+        bonus = props.value;
+    } else if(slot === "")
+    {
+        score = "";
+        bonus = "";
+    } else
+    {
+        score = props.value;
+        bonus = bonusCalc(slot, score);
+    }
+    return(
+        <tr>
+            <td style={{textAlign: "left"}}>{slot}</td>
+            <td style={{textAlign:"center"}}>{score}</td>
+            <td style={{textAlign:"right"}}>{bonus}</td>
+        </tr>
     )
 }
 
 function StatScreen(props)
 {
     var statList = Object.keys(props.stats);
-    var labels = statList.map((key) => 
-                   <StatSlot slot={key} value={props.equipment[key]}  />);
+    var labels = statList.map((key) =>
+                    { if (key === "")
+                        {return <StatLine slot={key} value={""} />}
+                      return <StatLine slot={key} value={props.stats[key]}  />
+                    });
     return (
-        <ul>
+        <table>
+            <StatHeaders />
             {labels}
-        </ul>
+        </table>
     )
 }
 
