@@ -12,9 +12,9 @@ function StatHeaders()
 {
     return(
         <tr>
-            <th style={{textAlign: "center"}}>Ability</th>
+            <th style={{textAlign: "left"}}>Ability</th>
             <th style={{textAlign: "center"}}>Score</th>
-            <th style={{textAlign: "center"}}>Bonus</th>
+            <th style={{textAlign: "left"}}>Bonus</th>
         </tr>
     )
 }

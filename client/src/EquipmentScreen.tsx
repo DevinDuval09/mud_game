@@ -1,23 +1,29 @@
 import React from "react";
 
-const noBullets = {listStyleType: "none"};
-
 function EquipmentSlot(props)
 {
     return(
-        <li style={noBullets}>{props.slot}: {props.value}</li>
+        <tr>
+            <td style={{textAlign:"left"}}>{props.slot}:</td>
+            <td style={{textAlign:"left"}}>{props.value}</td>
+        </tr>
     )
 }
 
 function EquipmentPanel(props)
 {
     var equipmentList = Object.keys(props.equipment);
-    var labels = equipmentList.map((key) => 
+    var data = equipmentList.map((key) => 
                    <EquipmentSlot slot={key} value={props.equipment[key]}  />);
+    var labels = <tr>
+                    <th>Slot</th>
+                    <th>Item</th>
+                </tr>
     return (
-        <ul>
+        <table>
             {labels}
-        </ul>
+            {data}
+        </table>
     )
 }
 
