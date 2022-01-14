@@ -3,6 +3,7 @@ import './App.css';
 import HealthScreen from "./HealthScreen.tsx";
 import EquipmentPanel from './EquipmentScreen.tsx';
 import StatScreen from './StatScreen.tsx';
+import RoomScreen from './RoomScreen.tsx';
 
 function App() {
   const maxHealth = 40;
@@ -27,6 +28,12 @@ function App() {
   stats["Cha"] = 10;
   stats[""] = null;
   stats["AC"] = 16;
+  var room = {};
+  room["description"] = "A room.";
+  room["items"] = ["Table", "Chair", "Candle"];
+  room["characters"] = ["Larry", "Curly", "Moe"];
+  room["itemAlignment"] = "left";
+  room["charAlignment"] = "right";
   return (
     <div className="App">
       <header className="App-header">
@@ -51,6 +58,13 @@ function App() {
         </div>
         <div>
           <StatScreen stats={stats} />
+        </div>
+        <div>
+          <RoomScreen description={room.description}
+                      items={room.items}
+                      itemAlignment={room.itemAlignment}
+                      characters={room.characters}
+                      charAlignment={room.charAlignment} />
         </div>
       </header>
     </div>
