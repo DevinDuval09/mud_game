@@ -52,12 +52,12 @@ function StatScreen(props)
     var statList = Object.keys(props.stats);
     var labels = statList.map((key) =>
                     { if (key === "")
-                        {return <StatLine slot={key} value={""} />}
-                      return <StatLine slot={key} value={props.stats[key]}  />
+                        {return <StatLine key={key} slot={key} value={""} />}
+                      return <StatLine key={key} slot={key} value={props.stats[key]}  />
                     });
     return (
         <table>
-            <StatHeaders />
+            <StatHeaders key={"StatHeaders"}/>
             {labels}
         </table>
     )

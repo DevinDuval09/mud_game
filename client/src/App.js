@@ -1,9 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
-import HealthScreen from "./HealthScreen.tsx";
-import EquipmentPanel from './EquipmentScreen.tsx';
-import StatScreen from './StatScreen.tsx';
 import RoomScreen from './RoomScreen.tsx';
+import PlayerScreen from './PlayerScreen.tsx';
 
 function App() {
   const maxHealth = 40;
@@ -36,37 +33,16 @@ function App() {
   room["charAlignment"] = "right";
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <div>
-          <HealthScreen maxHealth={maxHealth} currentHealth={currentHealth} />
-        </div>
-
-        <div>
-          <EquipmentPanel equipment={equipment} />
-        </div>
-        <div>
-          <StatScreen stats={stats} />
-        </div>
-        <div>
-          <RoomScreen description={room.description}
-                      items={room.items}
-                      itemAlignment={room.itemAlignment}
-                      characters={room.characters}
-                      charAlignment={room.charAlignment} />
-        </div>
-      </header>
+        <PlayerScreen equipment={equipment}
+                      maxHealth={maxHealth}
+                      currentHealth={currentHealth}
+                      stats={stats} />
+        <RoomScreen key={"RoomDisplay"}
+                    description={room.description}
+                    items={room.items}
+                    itemAlignment={room.itemAlignment}
+                    characters={room.characters}
+                    charAlignment={room.charAlignment} />
     </div>
   );
 }

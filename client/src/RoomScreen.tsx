@@ -2,7 +2,7 @@ import React from "react";
 
 function ListItems(props)
 {
-    return <li style={Object.assign({}, {style: props.alignment}, {listStyleType: "none"})}>{props.value}</li>
+    return <li key={props.value} style={Object.assign({}, {style: props.alignment}, {listStyleType: "none"})}>{props.value}</li>
 }
 
 function RoomDescription(props)
@@ -24,9 +24,9 @@ function ItemsList(props)
     );
 
     return (
-        <div>
+        <div key={"RoomItems"}>
             <p>Items in Room</p>
-            <ul>{items}</ul>
+            <ul key={"RoomItemList"}>{items}</ul>
         </div>
     )
 }
@@ -38,22 +38,20 @@ function CharactersList(props)
     );
 
     return (
-        <div>
+        <div key={"RoomChars"}>
             <p>People in Room:</p>
-            <ul>{chars}</ul>
+            <ul key="RoomCharList">{chars}</ul>
         </div>
         );
     }
 
 function RoomScreen(props)
 {
-    console.log(props.items);
-    console.log(props.characters);
     return(
         <div style={{display: "grid", gridTemplateColumns: "33% 33% 33%"}}>
-            <ItemsList items={props.items} alignment={props.itemAlignment} />
-            <RoomDescription description={props.description} />
-            <CharactersList characters={props.characters} alignment={props.charAlignment} />
+            <ItemsList key={"RoomItems"} items={props.items} alignment={props.itemAlignment} />
+            <RoomDescription key={"RoomDesc"} description={props.description} />
+            <CharactersList key={"RoomChars"} characters={props.characters} alignment={props.charAlignment} />
         </div>
     )
 }

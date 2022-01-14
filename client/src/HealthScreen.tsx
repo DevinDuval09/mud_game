@@ -16,8 +16,8 @@ function HealthScreen(props)
 {
     return(
         <ul>
-            <ListHealth value={props.maxHealth} label="Max Health" maxHealth={props.maxHealth} />
-            <ListHealth value={props.currentHealth} label="Current Health" maxHealth={props.maxHealth} />
+            <ListHealth key={"MaxHealth"} value={props.maxHealth} label="Max Health" maxHealth={props.maxHealth} />
+            <ListHealth key={"CurrentHealth"} value={props.currentHealth} label="Current Health" maxHealth={props.maxHealth} />
         </ul>
     )
 }
