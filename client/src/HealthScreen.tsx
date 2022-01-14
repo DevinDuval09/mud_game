@@ -4,7 +4,7 @@ const noBullets = {listStyleType: "none"};
 
 function ListHealth(props)
 {
-    var col = "white";
+    var col = "black";
     if (props.value <= (props.maxHealth * .25))
     {
         col = "red";
@@ -15,10 +15,12 @@ function ListHealth(props)
 function HealthScreen(props)
 {
     return(
-        <ul>
-            <ListHealth key={"MaxHealth"} value={props.maxHealth} label="Max Health" maxHealth={props.maxHealth} />
-            <ListHealth key={"CurrentHealth"} value={props.currentHealth} label="Current Health" maxHealth={props.maxHealth} />
-        </ul>
+        <div style={{display: "list"}}>
+            <ul>
+                <ListHealth key={"MaxHealth"} value={props.maxHealth} label="Max Health" maxHealth={props.maxHealth} />
+                <ListHealth key={"CurrentHealth"} value={props.currentHealth} label="Current Health" maxHealth={props.maxHealth} />
+            </ul>
+        </div>
     )
 }
 

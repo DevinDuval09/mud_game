@@ -56,10 +56,12 @@ function StatScreen(props)
                       return <StatLine key={key} slot={key} value={props.stats[key]}  />
                     });
     return (
-        <table>
-            <StatHeaders key={"StatHeaders"}/>
-            {labels}
-        </table>
+        <div style={{display: "table"}}>
+            <table>
+                <StatHeaders key={"StatHeaders"}/>
+                {labels}
+            </table>
+        </div>
     )
 }
 

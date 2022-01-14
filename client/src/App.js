@@ -31,12 +31,14 @@ function App() {
   room["characters"] = ["Larry", "Curly", "Moe"];
   room["itemAlignment"] = "left";
   room["charAlignment"] = "right";
+  var inventory = ["Healing Potion", "Scroll", "Bread"];
   return (
     <div className="App">
         <PlayerScreen equipment={equipment}
                       maxHealth={maxHealth}
                       currentHealth={currentHealth}
-                      stats={stats} />
+                      stats={stats}
+                      inventory={inventory} />
         <RoomScreen key={"RoomDisplay"}
                     description={room.description}
                     items={room.items}

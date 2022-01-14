@@ -11,7 +11,7 @@ function RoomDescription(props)
         <div>
             <p>Room Description:</p>
             <p>
-                props.description
+                {props.description}
             </p>
         </div>
     )
@@ -48,7 +48,7 @@ function CharactersList(props)
 function RoomScreen(props)
 {
     return(
-        <div style={{display: "grid", gridTemplateColumns: "33% 33% 33%"}}>
+        <div style={{display: "grid", gridTemplateColumns: "20% 60% 20%"}}>
             <ItemsList key={"RoomItems"} items={props.items} alignment={props.itemAlignment} />
             <RoomDescription key={"RoomDesc"} description={props.description} />
             <CharactersList key={"RoomChars"} characters={props.characters} alignment={props.charAlignment} />

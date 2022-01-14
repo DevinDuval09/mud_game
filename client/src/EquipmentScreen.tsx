@@ -20,10 +20,12 @@ function EquipmentPanel(props)
                     <th>Item</th>
                 </tr>
     return (
-        <table>
-            {labels}
-            {data}
-        </table>
+        <div style={{display: "table"}}>
+            <table>
+                {labels}
+                {data}
+            </table>
+        </div>
     )
 }
 
