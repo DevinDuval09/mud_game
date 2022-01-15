@@ -4,7 +4,7 @@ class Character:
     def createNew(cls, name):
         pass
 
-    @classMethod
+    @classmethod
     def fromId(cls, name):
         pass
 
