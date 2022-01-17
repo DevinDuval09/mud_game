@@ -1,6 +1,7 @@
 import './App.css';
 import RoomScreen from './RoomScreen.tsx';
 import PlayerScreen from './PlayerScreen.tsx';
+import UserInput from './Input.tsx';
 
 function App() {
   const maxHealth = 40;
@@ -45,6 +46,7 @@ function App() {
                     itemAlignment={room.itemAlignment}
                     characters={room.characters}
                     charAlignment={room.charAlignment} />
+        <UserInput />
     </div>
   );
 }
