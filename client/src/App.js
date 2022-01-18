@@ -2,10 +2,12 @@ import './App.css';
 import RoomScreen from './RoomScreen.tsx';
 import PlayerScreen from './PlayerScreen.tsx';
 import UserInput from './Input.tsx';
+import MainScreen from './MainScreen.tsx';
 
 function App() {
   const maxHealth = 40;
   const currentHealth = 10;
+  var history = ["o", 'n', 'e', 't', 'w', 'o'];
   var equipment = {};
   equipment["Helmet"] = "Iron Helmet";
   equipment["Torso"] = "Breastplate";
@@ -35,6 +37,7 @@ function App() {
   var inventory = ["Healing Potion", "Scroll", "Bread"];
   return (
     <div className="App">
+        <MainScreen history={history} />
         <PlayerScreen equipment={equipment}
                       maxHealth={maxHealth}
                       currentHealth={currentHealth}
