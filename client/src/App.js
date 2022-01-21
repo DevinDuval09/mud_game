@@ -4,6 +4,8 @@ import PlayerScreen from './PlayerScreen.tsx';
 import UserInput from './Input.tsx';
 import MainScreen from './MainScreen.tsx';
 
+history = ["Welcome to a world of Dragons, Magic, and Adventure!"];
+
 function getRoom()
 {
     //need to beable to parse out description, inventory, and characters
