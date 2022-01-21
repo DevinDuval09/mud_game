@@ -4,7 +4,7 @@ from ..python_classes.Character import *
 '''
 ObjectManager is here to track the state of active objects on the server.
 '''
-class ObjectManager:
+class ServerStateManager:
 
     def __init__(self):
         self.active_characters = []
