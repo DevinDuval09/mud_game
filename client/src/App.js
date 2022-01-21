@@ -4,37 +4,24 @@ import PlayerScreen from './PlayerScreen.tsx';
 import UserInput from './Input.tsx';
 import MainScreen from './MainScreen.tsx';
 
+history = ["Welcome to a world of Dragons, Magic, and Adventure!"];
+
+function getRoom()
+{
+    //need to beable to parse out description, inventory, and characters
+}
+
+function getCharacter()
+{
+    //need to beable to parse out health, equipment, inventory, and stats
+}
+
+function updateHistory()
+{
+    //sent new line to MainScreen?
+}
+
 function App() {
-  const maxHealth = 40;
-  const currentHealth = 10;
-  var history = ["o", 'n', 'e', 't', 'w', 'o'];
-  var equipment = {};
-  equipment["Helmet"] = "Iron Helmet";
-  equipment["Torso"] = "Breastplate";
-  equipment["Arms"] = null;
-  equipment["MainHand"] = "Longsword";
-  equipment["OffHand"] = "Shield";
-  equipment["Legs"] = "Leather pants";
-  equipment["Belt"] = "Leather belt";
-  equipment["Back"] = "Backpack";
-  equipment["Feet"] = "Leather boots";
-  equipment["Cloak"] = null;
-  var stats = {};
-  stats["Str"] = 18;
-  stats["Dex"] = 15;
-  stats["Con"] = 17;
-  stats["Int"] = 7;
-  stats["Wis"] = 8;
-  stats["Cha"] = 10;
-  stats[""] = null;
-  stats["AC"] = 16;
-  var room = {};
-  room["description"] = "A room.";
-  room["items"] = ["Table", "Chair", "Candle"];
-  room["characters"] = ["Larry", "Curly", "Moe"];
-  room["itemAlignment"] = "left";
-  room["charAlignment"] = "right";
-  var inventory = ["Healing Potion", "Scroll", "Bread"];
   return (
     <div className="App">
         <MainScreen history={history} />
