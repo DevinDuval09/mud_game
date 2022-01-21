@@ -81,3 +81,9 @@ class Character:
 
     def dash(self):
         pass
+
+    def hide(self):
+        pass
+
+    def sneak(self):
+        pass
