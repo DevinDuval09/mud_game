@@ -36,7 +36,11 @@ class Room(object):
         }
         with mongo:
             collection = mongo.db["Rooms"]
-            collection.replace_one({"number": self.number}, room_dict)
+            query = collection.find({"number": self.number})
+            if query.count() == 1:
+                collection.replace_one({"number": self.number}, room_dict)
+            if query.count() == 0:
+                collection.insert_one({**room_dict})
 
     def description(self):
         """Provide description of room along with any a list of interactable items"""
