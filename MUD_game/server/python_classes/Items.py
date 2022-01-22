@@ -2,6 +2,8 @@
 #from logger import logger
 
 # TODO: passive vs active skills
+# TODO: general vs specific profiencies
+#       equipment has a weapon class and specific weapon type connected to it 
 from types import MethodType
 from ..utils.mongo import mongo
 
