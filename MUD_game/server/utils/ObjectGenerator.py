@@ -1,5 +1,6 @@
 from .mongo import mongo
-from MUD_game.server.python_classes.Room import Room
+from ..python_classes.Room import Room
+from ..python_classes.Items import *
 
 '''
     Provides a cli commands to create various objects and save them to server
@@ -31,3 +32,37 @@ def create_room():
         #TODO: update room.save to attach inventory numbers instead of objects
         room.inventory = inventory_list
     room.save()
+
+def create_item():
+    description = input("Enter a description:")
+    stat_dict = {}
+    for stat in stats_list: #stats_list is defined in Items.py
+        stat_dict[stat] = input(f"Enter value to add to {stat}:")
+    item_type = input(f"What type of item is this? Select from: {item_types}")
+    new_item = ''
+    with mongo:
+        id = mongo.db["Items"].count() + 1
+        if item_type.lower() == "item":
+            new_item = Item(id, description, **stat_dict)
+        elif item_type.lower() == "container":
+            inventory = input("Enter comma delimited list of object numbers:").split(",")
+            for number in inventory:
+                query = mongo.db["Items"].find_one({"number": number})
+                if not query:
+                    print(f"{number} does not exist. Removing from inventory.")
+                    inventory.remove(number)
+            new_item = Container(id, description, inventory_items=inventory, **stat_dict)
+        elif item_type.lower() == "equipment":
+            slot = input("Enter equipment slot:")
+            skill = input("Enter associated skill:")
+            new_item = Equipment(id, description, slot, associated_skill=skill, **stat_dict)
+        elif item_type.lower() == "book":
+            print("Not implemented")
+            return
+        else:
+            print(f"{item_type} does not exist.")
+            return
+        new_item.save()
+
+    
+    
