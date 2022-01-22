@@ -11,6 +11,7 @@ setup(
         include_package_data=True,
         install_requires=['pymongo'],
         entry_points={'console_scripts': ['MUD_game=game_server:main',
-                                           'create_room=MUD_game.server_utils:create_room'
+                                           'MUD.create_room=MUD_game.server_utils:create_room',
+                                           'MUD.create_item=MUD_game.server_utils:create_item'
                                            ]},
         )
