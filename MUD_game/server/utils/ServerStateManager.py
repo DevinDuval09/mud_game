@@ -1,5 +1,6 @@
 from mongo import mongo
 from ..python_classes.Character import *
+from ..python_classes.Room import Room
 
 '''
 ObjectManager is here to track the state of active objects on the server.
@@ -8,7 +9,7 @@ class ServerStateManager:
 
     def __init__(self):
         self.active_characters = []
-        self.active_rooms=[]
+        self.active_rooms={}
 
     def create_character(self, from_server:bool, id:int=None):
         new_character = Character()
@@ -29,6 +30,8 @@ class ServerStateManager:
             pass
 
     def create_room(self, id:int):
-        with mongo:
-            #create room
-            pass
+        new_room = Room.fromId(id)
+        self.active_rooms[id] = new_room
+
+    def execute_player_input(self, player: str, command: str):
+        pass

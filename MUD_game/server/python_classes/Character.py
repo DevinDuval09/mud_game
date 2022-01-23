@@ -1,4 +1,9 @@
 from math import ceil
+
+from MUD_game.server.python_classes.Skills import EquipmentClasses, EquipmentTypes, Skills
+'''Base class for all characters'''
+#TODO: redo skills. Skills = standard DnD skills from Skills.py
+# proficiencies = general and specific proficiencies from Skills.py
 class Character:
     @classmethod
     def createNew(cls, name):
@@ -19,10 +24,13 @@ class Character:
         INT: int = 0,
         WIS: int = 0,
         CHA: int = 0,
-        inventory = [],
-        equipment = {},
+        inventory = [], #holds inventory objects
+        equipment = {}, #key: equipment slot value: equipment object
         hit_dice: int = 6,
         level: int = 1,
+        general_prof: EquipmentClasses = [],
+        specific_prof: EquipmentTypes = [],
+        skills: Skills = [],
     *args,
     **kwargs):
         self.name = name
@@ -38,7 +46,10 @@ class Character:
         self.equipment = equipment
         self.hit_dice = hit_dice
         self.level = level
-        self.proficiency = ceil(self.level / 4) + 1
+        self.proficiency_bonus = ceil(self.level / 4) + 1
+        self.general_proficiencies = general_prof #list of enums from Skills.py
+        self.specific_proficiencies = specific_prof
+        self.skills = skills
 
     def save(self):
         pass

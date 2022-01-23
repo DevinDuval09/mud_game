@@ -1,7 +1,11 @@
 import os.path
 import socketserver as sserv
+from .utils.ServerStateManager import ServerStateManager
 
 class Router(sserv.StreamRequestHandler):
+    def __init__(self):
+        super().__init__()
+        self.manager = ServerStateManager()
     def _create_header(self, http_code:int, file_path:str)->str:
         header = "HTTP/1.1 "
         content_type = file_path[file_path.rfind(".") + 1: len(file_path)]

@@ -3,7 +3,8 @@
 
 # TODO: passive vs active skills
 # TODO: general vs specific profiencies
-#       equipment has a weapon class and specific weapon type connected to it 
+#       equipment has a weapon class and specific weapon type connected to it
+# TODO: each Item subclass needs a unique fromId class method 
 from types import MethodType
 from ..utils.mongo import mongo
 
