@@ -73,6 +73,9 @@ class EquipmentTypes(Enum):
     HEAVY_CROSSBOW = 12
     DAGGERS = 13
     STAFFS = 14
+    RAPIERS = 15
+    DARTS = 16
+    SLINGS = 17
     
 
 

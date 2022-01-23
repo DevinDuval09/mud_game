@@ -1,6 +1,7 @@
 from os import stat
 from typing import Dict
 from ..utils.mongo import mongo
+from .Items import *
 
 
 class Room(object):
@@ -16,10 +17,30 @@ class Room(object):
                 characters=[npc for npc in room_dict["characters"]],
             )
 
-    def __init__(self, number, description, inventory:str=[], characters:str=[], exits:Dict[str,int]={}):
+    def __init__(self, number, description, inventory:int=[], characters:str=[], exits:Dict[str,int]={}):
         self.number = number
         self._description = description
-        self.inventory = inventory
+        if len(inventory) > 0:
+            self.inventory = []
+            with mongo:
+                collection = mongo.db["Items"]
+                for number in inventory:
+                    #inventory in instance is a collection of Item objects
+                    item = collection.find_one({"id": number})
+                    if item:
+                        if item["item_type"] == "Item":
+                            self.inventory.append(Item.fromId(number))
+                        elif item["item_type"] == "Container":
+                            self.inventory.append(Container.fromId(number))
+                        elif item["item_type"] == "Equipment":
+                            self.inventory.append(Equipment.fromId(number))
+                        elif item["item_type"] == "Book":
+                            print("Book not implemented.")
+                        else:
+                            item_type = item["item_type"]
+                            print(f"{item_type} not implemented.")
+
+
         self.exits = exits
         self.characters = characters
 
