@@ -1,6 +1,5 @@
 '''Provides enums for skills'''
 from enum import Enum
-#TODO: Enums aren't saving to mongodb as int
 '''General skills'''
 class Skills(Enum):
     #strength skills
@@ -43,12 +42,12 @@ class Skills(Enum):
 
 '''Proficiency with armor and weapon classes and misc tool sets'''
 class EquipmentClasses(Enum):
-    SIMPLE_WEAPONS = 0
-    MARTIAL_WEAPONS = 1
-    LIGHT_ARMOR = 2
-    MEDIUM_ARMOR = 3
-    HEAVY_ARMOR = 4
-    SHIELDS = 5
+    SHIELDS = 0
+    SIMPLE_WEAPONS = 1
+    MARTIAL_WEAPONS = 2
+    LIGHT_ARMOR = 3
+    MEDIUM_ARMOR = 4
+    HEAVY_ARMOR = 5
     THIEVES_TOOLS = 6
     SMITH_TOOLS = 7
     LEATHER_TOOLS = 8
@@ -57,24 +56,38 @@ class EquipmentClasses(Enum):
 
 '''Specific equipment types'''
 class EquipmentTypes(Enum):
-    SHORT_SWORD = 0
-    LONG_SWORD = 1
-    GREAT_SWORD = 2
-    HAND_AXE = 3
-    BATTLE_AXE = 4
-    GREAT_AXE = 5
-    LIGHT_HAMMER = 6
-    WAR_HAMMER = 7
-    SHORT_BOW = 8
-    LONG_BOW = 9
-    HAND_CROSSBOW = 10
-    LIGHT_CROSSBOW = 11
-    HEAVY_CROSSBOW = 12
-    DAGGERS = 13
-    STAFFS = 14
-    RAPIERS = 15
-    DARTS = 16
-    SLINGS = 17
+    SHIELDS = 0
+    SHORT_SWORD = 1
+    LONG_SWORD = 2
+    GREAT_SWORD = 3
+    HAND_AXE = 4
+    BATTLE_AXE = 5
+    GREAT_AXE = 6
+    LIGHT_HAMMER = 7
+    WAR_HAMMER = 8
+    SHORT_BOW = 9
+    LONG_BOW = 10
+    HAND_CROSSBOW = 11
+    LIGHT_CROSSBOW = 12
+    HEAVY_CROSSBOW = 13
+    DAGGERS = 14
+    STAFFS = 15
+    RAPIERS = 16
+    DARTS = 17
+    SLINGS = 18
+class EquipmentSlots(Enum):
+    HEAD = 0
+    CHEST = 1
+    ARMS = 2
+    GLOVES = 3
+    MAIN_HAND = 4
+    OFF_HAND = 5
+    BELT = 6
+    LEGS = 7
+    FEET = 8
+    CLOAK = 9
+    BACK = 10
+
     
 
 
