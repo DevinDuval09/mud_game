@@ -1,7 +1,6 @@
 '''Provides enums for skills'''
 from enum import Enum
-from .Character import Character
-
+#TODO: Enums aren't saving to mongodb as int
 '''General skills'''
 class Skills(Enum):
     #strength skills
@@ -29,15 +28,15 @@ class Skills(Enum):
     PERSUATION = 17
 
     def get_stat(self):
-        if self == 0:
+        if self.value == 0:
             return "strength"
-        elif self < 4:
+        elif self.value < 4:
             return "dexterity"
-        elif self < 9:
+        elif self.value < 9:
             return "intelligence"
-        elif self < 14:
+        elif self.value < 14:
             return "wisdom"
-        elif self < 18:
+        elif self.value < 18:
             return "charisma"
         else:
             print(f"{self} not implemented")

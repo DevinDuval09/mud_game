@@ -192,3 +192,31 @@ class Book(Item):
                 message += "think it is a bit of a bore"
             message += "."
         return message
+
+
+def create_item_fromId(id: int) -> Item:
+    with mongo:
+        doc = mongo.db["Items"].find_one({"id": id})
+        item_type = doc.pop("item_type", None)
+        desc = doc.pop("description", None)
+        doc.pop("id", None)
+        if item_type == "Equipment":
+            slot = doc.pop("slot", None)
+            item_skill = doc.pop("specific_skill", None)
+            item_class = doc.pop("general_skill", None)
+            return Equipment(id,
+                            desc,
+                            slot,
+                            specific_skill=item_skill,
+                            general_skill=item_class,
+                            **doc)
+        elif item_type == "Item":
+            return Item(id,
+                        desc,
+                        **doc)
+        elif item_type == "Container":
+            pass
+        elif item_type == "Book":
+            pass
+        else:
+            print(f"{item_type} not implemented.")
