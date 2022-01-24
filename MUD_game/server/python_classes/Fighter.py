@@ -13,13 +13,13 @@ class Fighter(Character):
         with mongo:
             player_doc = mongo.db["Players"].find_one({"name": name})
             #inventory_keys = player_doc["inventory"]
+            print(player_doc)
             for number in player_doc["inventory"]:
                 item = create_item_fromId(number)
-                inventory_dict[item.description] = item
-            for slot, number in player_doc["equipment"]:
+                inventory_dict[item._description] = item
+            for slot, number in player_doc["equipment"].items():
                 item = create_item_fromId(number)
-                equipment_dict[EquipmentSlots(slot)] = item
-            print(player_doc)
+                equipment_dict[EquipmentSlots(int(slot))] = item
         return cls(
                     player_doc["style"],
                     player_doc["name"],
