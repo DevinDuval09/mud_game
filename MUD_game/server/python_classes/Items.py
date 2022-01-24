@@ -1,12 +1,10 @@
 """track item information"""
 #from logger import logger
 
-# TODO: passive vs active skills
-# TODO: general vs specific profiencies
-#       equipment has a weapon class and specific weapon type connected to it
 # TODO: each Item subclass needs a unique fromId class method 
 from types import MethodType
 from ..utils.mongo import mongo
+from .Skills import *
 
 stats_list = [
     "strength",
@@ -31,18 +29,18 @@ class Item(object):
         self,
         id,
         description,
-        active_skills=[],
-        passive_skills=[],
-        proficiency_skills={},
-        **stats,
+        skills=[], #skill enum granted by item
+        general_proficiencies=[], #equipment class enums granted by item
+        specific_proficiencies=[], #specific equipment enum granted by item
+        **stats, #stat increases granted by item
     ):
         self.number = id
         self._description = description
-        self.active_skills = active_skills
-        self.proficiency_skills = proficiency_skills
-        self.passive_skills = passive_skills
+        self.skills = skills
+        self.general_proficiencies = general_proficiencies
+        self.specific_proficiences = specific_proficiencies
         for key, value in stats.items():
-            if key.lower() != "inventory_items":
+            if key.lower() != "inventory_items": #guard againt container inventory
                 setattr(self, key, value)
 
     def description(self):
@@ -54,9 +52,9 @@ class Item(object):
             save_dict = {
                 "number": self.number,
                 "description": self._description,
-                "active_skills": [skill.__name__ for skill in self.active_skills],
-                "passive_skills": [skill.__name__ for skill in self.passive_skills],
-                "proficiency_skills": self.proficiency_skills,
+                "skills": [skill.value() for skill in self.skills],
+                "general_proficiencies": [skill.value() for skill in self.general_proficiencies],
+                "specific_proficiencies": [skill.value() for skill in self.specific_proficiences],
             }
             for stat in stats_list:
                 if stat in dir(self):
@@ -71,13 +69,13 @@ class Item(object):
 
 class Container(Item):
     def __init__(
-        self, id, description, active_skills=[], proficiency_skills={}, **stats
+        self, id, description, skills=[], specific_proficiencies={}, **stats
     ):
         super().__init__(
             id,
             description,
-            active_skills=active_skills,
-            proficiency_skills=proficiency_skills,
+            skills=skills,
+            specific_proficiencies=specific_proficiencies,
             **stats,
         )
         self._open = False
@@ -95,15 +93,22 @@ class Container(Item):
         self._open = True
         return f"You open the {self._description}. It contains {self.inventory}."
 
+    def save(self):
+        super().save()
+        with mongo:
+            inventory = [item.number for item in self.inventory]
+            mongo.db["Items"].update_one({"number": self.number}, {"$set": {"inventory": inventory}})
+
+
 
 class Equipment(Item):
     def __init__(
         self,
-        id,
-        description,
-        slot,
-        specific_skill=None,
-        general_skill=None,
+        id: int,
+        description: str,
+        slot: EquipmentSlots,
+        equipment_type: EquipmentTypes=None,
+        equipment_class: EquipmentClasses=None,
         **stats,
     ):
         super().__init__(
@@ -112,27 +117,36 @@ class Equipment(Item):
             **stats,
         )
         self.slot = slot
-        self.specific_skill=specific_skill,
-        self.general_skill=general_skill
+        self.equipment_type=equipment_type
+        self.equipment_class=equipment_class
 
+    def save(self):
+        super().save()
+        slot_update = {"slot": self.slot.value}
+        equipment_type_update = {"equipment_type": self.equipment_type.value}
+        equipment_class_update = {"equipment_class": self.equipment_class.value}
+        updates = [slot_update, equipment_class_update, equipment_type_update]
+        with mongo:
+            for update in updates:
+                mongo.db["Items"].update_one({"number": self.number}, {"$set": update})
 
 class Book(Item):
     def __init__(
         self,
-        id,
-        description,
+        id: int,
+        description: str,
         effect=[None],
-        active_skills=[],
-        passive_skills=[],
-        proficiency_skills=[],
+        skills: Skills=[],
+        general_proficiencies: EquipmentClasses=[],
+        specific_proficiencies: EquipmentTypes=[],
         **stats,
     ):
         super().__init__(
             id,
             description,
-            active_skills=active_skills,
-            passive_skills=passive_skills,
-            proficiency_skills=proficiency_skills,
+            skills=skills,
+            general_proficiencies=general_proficiencies,
+            specific_proficiencies=specific_proficiencies,
             **stats,
         )
         self.effects = effect
@@ -148,43 +162,43 @@ class Book(Item):
                     for stat, value in zip(my_stats, my_values):
                         message += f"feel your {stat} increasing "
                         setattr(player, stat, getattr(player, stat) + value)
-                elif effect == "passive_skills":
+                elif effect == "general_proficiencies":
 #                    logger.info(
 #                        "Adding these passive skills to player: ".format(
-#                            *self.passive_skills
+#                            *self.general_proficiencies
 #                        )
 #                    )
-                    for skill in self.passive_skills:
-                        if skill not in player.passive_skills:
+                    for skill in self.general_proficiencies:
+                        if skill not in player.general_proficiencies:
                             message += (
                                 f"suddenly understand the art of {skill.__name__}"
                             )
-                            player.passive_skills.append(skill)
-                elif effect == "active_skills":
+                            player.general_proficiencies.append(skill)
+                elif effect == "skills":
 #                    logger.info(
 #                        "Adding these active skills to player: ".format(
-#                            *self.active_skills
+#                            *self.skills
 #                        )
 #                    )
-                    for skill in self.active_skills:
+                    for skill in self.skills:
                         if skill.__name__ not in dir(player):
                             message += f"think you can now {skill.__name__}"
                             setattr(player, skill.__name__, MethodType(skill, player))
                             print(getattr(player, skill.__name__))
-                elif effect == "proficiency_skills":
+                elif effect == "specific_proficiencies":
 #                    logger.info(
 #                        "Adding these proficiency skills: ".format(
-#                            *self.proficiency_skills
+#                            *self.specific_proficiencies
 #                        )
 #                    )
-                    for skill, rating in self.proficiency_skills.items():
+                    for skill, rating in self.specific_proficiencies.items():
                         print("skill: ", skill)
                         print("rating: ", rating)
                         message += f"gain a better understanding of {skill} usage"
-                        if skill in player.proficiency_skills.keys():
-                            player.proficiency_skills[skill] += rating
+                        if skill in player.specific_proficiencies.keys():
+                            player.specific_proficiencies[skill] += rating
                         else:
-                            player.proficiency_skills[skill] = rating
+                            player.specific_proficiencies[skill] = rating
                 else:
                     message += "realize it is gibberish"
             else:
@@ -201,14 +215,14 @@ def create_item_fromId(id: int) -> Item:
         desc = doc.pop("description", None)
         doc.pop("id", None)
         if item_type == "Equipment":
-            slot = doc.pop("slot", None)
-            item_skill = doc.pop("specific_skill", None)
-            item_class = doc.pop("general_skill", None)
+            slot = EquipmentSlots(doc.pop("slot", None))
+            item_type = EquipmentTypes(doc.pop("equipment_type", None))
+            item_class = EquipmentClasses(doc.pop("equipment_class", None))
             return Equipment(id,
                             desc,
                             slot,
-                            specific_skill=item_skill,
-                            general_skill=item_class,
+                            equipment_type=item_type,
+                            equipment_class=item_class,
                             **doc)
         elif item_type == "Item":
             return Item(id,
