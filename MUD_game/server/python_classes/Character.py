@@ -1,6 +1,6 @@
 from math import ceil
 from enum import Enum
-from Items import Equipment, Item
+from .Items import Equipment, Item
 
 from MUD_game.server.python_classes.Skills import EquipmentClasses, EquipmentTypes, Skills
 '''Base class for all characters'''
@@ -36,8 +36,8 @@ class Character:
         INT: int = 0,
         WIS: int = 0,
         CHA: int = 0,
-        inventory: dict(str, Item) = {}, #holds inventory objects
-        equipment: dict(EquipmentSlots, Equipment) = {}, #key: equipment slot value: equipment object
+        inventory: dict = {}, #holds inventory objects
+        equipment: dict = {}, #key: equipment slot value: equipment object
         hit_dice: int = 6,
         level: int = 1,
         general_prof: EquipmentClasses = [],
@@ -68,7 +68,7 @@ class Character:
         equipment_dict = {}
         for slot, item in self.equipment.values():
             if item:
-                equipment_dict[slot] = item.id
+                equipment_dict[slot.value] = item.id
         save_dict["equipment"] = equipment_dict
         save_dict["inventory"] = [item.id for item in self.inventory.items()]
         for stat in stats:
@@ -76,9 +76,9 @@ class Character:
         save_dict["room"] = self.spawn_room
         save_dict["description"] = self.description
         save_dict["level"] = self.level
-        save_dict["general proficiencies"] = self.general_proficiencies
-        save_dict["specific proficiencies"] = self.specific_proficiencies
-        save_dict["skills"] = self.skills
+        save_dict["general proficiencies"] = [prof.value for prof in self.general_proficiencies]
+        save_dict["specific proficiencies"] = [prof.value for prof in self.specific_proficiencies]
+        save_dict["skills"] = [skill.value for skill in self.skills]
 
         return save_dict
 
