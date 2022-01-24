@@ -38,7 +38,7 @@ class Item(object):
         self._description = description
         self.skills = skills
         self.general_proficiencies = general_proficiencies
-        self.specific_proficiences = specific_proficiencies
+        self.specific_proficiencies = specific_proficiencies
         for key, value in stats.items():
             if key.lower() != "inventory_items": #guard againt container inventory
                 setattr(self, key, value)
@@ -210,10 +210,10 @@ class Book(Item):
 
 def create_item_fromId(id: int) -> Item:
     with mongo:
-        doc = mongo.db["Items"].find_one({"id": id})
+        doc = mongo.db["Items"].find_one({"number": id})
         item_type = doc.pop("item_type", None)
         desc = doc.pop("description", None)
-        doc.pop("id", None)
+        doc.pop("number", None)
         if item_type == "Equipment":
             slot = EquipmentSlots(doc.pop("slot", None))
             item_type = EquipmentTypes(doc.pop("equipment_type", None))
