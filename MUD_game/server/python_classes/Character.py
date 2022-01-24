@@ -106,7 +106,8 @@ class Character:
 
 
     
-    def grab(self):
+    def grab(self, item: Item):
+        #take item out of current room and put into inventory
         pass
 
     def drop(self):
@@ -141,6 +142,21 @@ class Character:
                 current_stat = getattr(self, stat)
                 setattr(self, stat, current_stat + getattr(item_object, stat))
         self.equipment[item_object.slot] = item_object
+        self.AC = self._calc_AC()
+        if item_object.slot == EquipmentSlots.HEAD:
+            return f"You equip the {item_object._description} on your head."
+        elif item_object.slot == EquipmentSlots.CHEST:
+            return f"You equip the {item_object._description} on your chest."
+        elif item_object.slot == EquipmentSlots.MAIN_HAND:
+            return f"You grab the {item_object._description} firmly in your hand."
+        elif item_object.slot == EquipmentSlots.OFF_HAND:
+            return f"You hold the {item_object._description} in your off hand."
+        elif item_object.slot == EquipmentSlots.LEGS:
+            return f"You pull the {item_object._description} over your legs."
+        elif item_object.slot == EquipmentSlots.FEET:
+            return f"You strap the {item_object._description} to your feet."
+        else:
+            return f"{item_object.slot} not implemented."
         
 
     def remove(self):
@@ -165,4 +181,12 @@ class Character:
         pass
 
     def sneak(self):
+        pass
+
+    def palm(self):
+        #sneaky grab
+        pass
+
+    def steal(self):
+        #palm something off another NPC or player
         pass
