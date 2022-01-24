@@ -1,25 +1,9 @@
 from math import ceil
 from enum import Enum
 from .Items import Equipment, Item
-
-from MUD_game.server.python_classes.Skills import EquipmentClasses, EquipmentTypes, Skills
+from .Skills import EquipmentSlots, EquipmentClasses, EquipmentTypes, Skills
 '''Base class for all characters'''
-#TODO: redo skills. Skills = standard DnD skills from Skills.py
-# proficiencies = general and specific proficiencies from Skills.py
 stats = ["strength", "dexterity", "constitution", "intelligence", "wisdom", "charisma"]
-class EquipmentSlots(Enum):
-    HEAD = 0
-    CHEST = 1
-    ARMS = 2
-    GLOVES = 3
-    MAIN_HAND = 4
-    OFF_HAND = 5
-    BELT = 6
-    LEGS = 7
-    FEET = 8
-    CLOAK = 9
-    BACK = 10
-
 class Character:
     @classmethod
     def createNew(cls, name):
@@ -36,8 +20,8 @@ class Character:
         INT: int = 0,
         WIS: int = 0,
         CHA: int = 0,
-        inventory: dict = {}, #holds inventory objects
-        equipment: dict = {}, #key: equipment slot value: equipment object
+        inventory: dict = {}, #holds inventory objects. key: item name, value item object
+        equipment: dict = {}, #key: equipment slot enum: equipment object
         hit_dice: int = 6,
         level: int = 1,
         general_prof: EquipmentClasses = [],
