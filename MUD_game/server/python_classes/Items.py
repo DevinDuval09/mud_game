@@ -102,20 +102,18 @@ class Equipment(Item):
         id,
         description,
         slot,
-        associated_skill=None,
-        active_skills=[],
-        proficiency_skills={},
+        specific_skill=None,
+        general_skill=None,
         **stats,
     ):
         super().__init__(
             id,
             description,
-            active_skills=active_skills,
-            proficiency_skills=proficiency_skills,
             **stats,
         )
         self.slot = slot
-        self.associated_skill = associated_skill
+        self.specific_skill=specific_skill,
+        self.general_skill=general_skill
 
 
 class Book(Item):
