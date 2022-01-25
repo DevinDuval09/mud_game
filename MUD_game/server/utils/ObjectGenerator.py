@@ -64,5 +64,3 @@ def create_item():
             return
         new_item.save()
 
-    
-    
