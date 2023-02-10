@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MUD client</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Devin Duval">
+    <meta name="description" content="A mud I made that uses python backend 
+        and HTML, CSS, and Javascript fronend">
+    <link rel="stylesheet" href="css_sheets/MUD_client.css">
+    <script type="text/javascript" src="js_scripts/scripts.js"></script>
+  </head>
+  <body class="grid-container">
+      <div class="header">Header</div>
+      <div class="log">log of stuff you've done</div>
+      <div class="room">Room description</div>
+      <div class="objects">Stuff in the room</div>
+      <div class="characters">Creatures in the room</div>
+      <div class="inventory">You're inventory</div>
+      <div class="equipment">You're equipped equipment</div>
+      <input id="command" class="user_input" ></input>
+      <button onclick="postCommand()" class="button">Enter Command</button>
+  </body>
+</html>
