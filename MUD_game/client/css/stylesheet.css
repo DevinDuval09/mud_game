@@ -1,37 +1,82 @@
-.header{grid-area: header; height: 75px; color:red; text-align: center;}
-.log{grid-area: log; height: 175px; color:white; overflow-y: scroll;}
-.room{grid-area: room; height: 100px; color: white;}
-.objects{grid-area:objects; height: 100px; color: blue;}
-.characters{grid-area:characters; height: 100px; color: red;}
-.inventory{grid-area:inventory; height: 100px; color: greenyellow;}
-.equipment{grid-area:equipment; height:100px; color:aqua;}
-.user_input{grid-area: user_input; height:25px; color: white;}
-.button{grid-area: button; height:25px; color:blue;}
-.footer{grid-area: footer; height: 75px}
-.grid-container{
-    display:grid;
-    grid-template-areas:
-    'header header header header header header'
-    'log log log log log log'
-    'room room room room room room'
-    'objects objects objects objects characters characters'
-    'inventory inventory inventory inventory equipment equipment'
-    'user_input user_input user_input user_input user_input button'
-    'footer footer footer footer footer footer';
-    background-color: darkred;
-    padding: 10px;
-}
-
-.grid-container div{
+div{
     background-color: black;
-    padding-left: 40px;
-    padding-right: 40px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-    margin: 5px;
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    margin-bottom: 1em;
     border: 5px;
     border-color: white;
     border-radius: 25px;
+    min-width: 20em;
+}
+.header{
+    display: block;
+    height: 2em; 
+    color:red; 
+    text-align: center;
+}
+.log{
+    display:block;
+    height: 11em;
+    color:white;
+    overflow-y: scroll;
+}
+.room{
+    display: block;
+    height: 6em; 
+    color: white;
+}
+.container {
+    background-color: darkred;
+    text-align: center;
+    min-height: 10em;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.container .info-box {
+    display: inline-block;
+    height: 10em;
+}
+.objects{
+    width: 30%;
+    overflow-y: scroll;
+    color: blue;
+}
+.characters{
+    width: 30%;
+    overflow-y: scroll;
+    color: red;
+}
+.inventory{
+    color: greenyellow;
+}
+.equipment{
+    color:aqua;
+}
+
+.status {
+    color: blue;
+}
+.user_input{
+    width: 50em;
+    height:1.5em; 
+    color: white;
+}
+.button{
+    height:3em; 
+    color:blue;
+}
+.footer{
+    grid-area: footer; 
+    height: 75px}
+.grid-container{
+    background-color: darkred;
+    padding: 10px;
 }
 
 .grid-container input{
@@ -47,6 +92,7 @@
 }
 .grid-container button{
     background-color: black;
+    font-family: monaco, Consolas, "Lucida Console", monospace;
     padding-left: 40px;
     padding-right: 40px;
     padding-top: 5px;
@@ -55,4 +101,9 @@
     border: 5px;
     border-color: white;
     border-radius: 25px;
+    text-align: center;
+}
+
+#status-container {
+    background-color: darkred;
 }

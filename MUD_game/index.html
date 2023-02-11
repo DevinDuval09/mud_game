@@ -11,13 +11,24 @@
     <script type="text/javascript" src="./client/js/index.js"></script>
   </head>
   <body class="grid-container">
+    <div class="container">
       <div class="header">Header</div>
       <div class="log">log of stuff you've done</div>
       <div class="room">Room description</div>
-      <div class="objects">Stuff in the room</div>
-      <div class="characters">Creatures in the room</div>
-      <div class="inventory">You're inventory</div>
-      <div class="equipment">You're equipped equipment</div>
+    </div>
+      <div class="container">
+        <div class="objects info-box">Stuff in the room</div>
+        <div class="characters info-box">Creatures in the room</div>
+      </div>
+      <div class="container">
+        <div class="inventory info-box">You're inventory</div>
+        <div class="info-box" id="status-container">
+          <div class="status">Your max and current HP</div>
+          <div class="status">Your status</div>
+          <div class="status">Your max and current mana</div>
+        </div>
+        <div class="equipment info-box">You're equipped equipment</div>
+      </div>
       <input id="command" class="user_input" ></input>
       <button onclick="postCommand()" class="button">Enter Command</button>
   </body>
