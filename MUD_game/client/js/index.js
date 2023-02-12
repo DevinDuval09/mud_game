@@ -3,9 +3,9 @@
 //build a state manager to handle incoming/outgoing messages from server
 //server sends json describing what the page looks like
 //state manager decodes json and updates panels as necessary
-const PanelHandler = class ElementHandler {
-    constructor(element) {
-        this.element = element;
+const PanelHandler = class {
+    constructor(elem) {
+        this.element = elem;
         //current text values of the bottom of the element.
         //All text should be in a span
         this.currentText = [];
@@ -23,13 +23,13 @@ const PanelHandler = class ElementHandler {
 }
 
 const ListPanelHandler = class extends PanelHandler {
-    constructor(element, liLimit) {
-        super(element);
+    constructor(elem, liLimit) {
+        super(elem);
         this.list = this.element.querySelector("ul");
         this.maxLines = liLimit;
     }
 
-    update(text) {
+    addLine(text) {
         let liList = this.list.querySelectorAll("li");
         //check list size against maxLines
         if (liList && this.maxLines && liList.length == this.maxLines) {
