@@ -16,11 +16,8 @@ const PanelHandler = class {
     //remove function? currentText gets updated by subclass
     update() {
         let counter = 0;
-        console.log(this.currentText);
         for (const span of this.element.querySelectorAll("span")) {
-            console.log("span text: ", span.innerText, " in currentText: ", this.currentText.includes(span.innerText));
             if (!this.currentText.includes(span.innerText)) {
-                console.log("adding ", span.innerText);
                 this.currentText.push(span.innerText);
                 ++counter;
             }
@@ -64,7 +61,7 @@ const ListPanelHandler = class extends PanelHandler {
         if (liList && this.maxLines && liList.length == this.maxLines) {
             //if maxLines has been reached, remove last item from current text
             //later, currentText will be used to repopulate all the list items
-            this.currentText.pop();
+            this.currentText.shift();
         } else {
             //if maxLines has not been reached, add another list item and refresh liList
             const newLi = PanelHandler.createTextElement("li");
@@ -78,7 +75,7 @@ const ListPanelHandler = class extends PanelHandler {
             this.list.children[0].remove();
         }
         //create appropriate number of LI
-        while (this.list.children.length < this.currentText) {
+        while (this.list.children.length < this.currentText.length) {
             const newLi = PanelHandler.createTextElement("li");
             this.list.appendChild(newLi);
         }
