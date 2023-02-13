@@ -10,15 +10,19 @@ const unitTest = class {
      * @param {function or string} func - the function to call. If unitTests has an object attached, this should be a string, otherwise it should be a fucntion
      * @param {list} params - parameters to pass to the function 
      * @param {*} expectedValue - the expected result
+     * @param {function} setUP - setup function to run before test
+     * @param {function} tearDown - teardown function to run after test
      */
-    runTest(func, params, expectedValue){
+    runTest(func, params, expectedValue, setUp, tearDown){
+        if (setUp) setUp();
         let testVal = null;
         if (this.object) {
             testVal = this.object[func](...params);
         } else {
             testVal = func(...params);
         }
-        console.assert(expectedValue === testVal, `Got ${testVal} from ${func.name} with params ${params}, expected ${expectedValue}`);
+        console.assert(expectedValue === testVal, `Got ${testVal} from ${func} with params ${params}, expected ${expectedValue}`);
+        if (tearDown) tearDown();
     }
     /**
      * Runs a test on a function that does not return any values, but edits the DOM
@@ -35,7 +39,7 @@ const unitTest = class {
         //run setup
         if (setUp) setUp();
         //execute function
-        this.runTest(func, params, undefined);
+        this.runTest(func, params, undefined, null, null);
         //dom edit test
         let nodes = null;
         if (query) {
@@ -68,15 +72,7 @@ const unitTest = class {
 
         if (tearDown) tearDown();
     }
-
-    clearContainer() {
-        for(const node of this.element.childNodes) {
-            this.element.removeChild(node);
-        }
-        this.element.innerText = null;
-    }
 }
-
 const playerLogTest = new ListPanelHandler(document.getElementById("log"), 50);
 const listPanelHandlerTests = new unitTest(playerLogTest, document.getElementById("log"));
 const testLines = ["line 1", "line 2", "line 3"];
@@ -93,6 +89,8 @@ const createDivWithUl = (list, precedingText) => {
     }
     return expectedDiv;
 }
+
+//Tests below this line---------------------------------------------------------------
 listPanelHandlerTests.domEditTest(
     "addLine",
     [testLines[0]],
@@ -100,6 +98,15 @@ listPanelHandlerTests.domEditTest(
     document.getElementById("log"),
     null,
     null,
-    () => {listPanelHandlerTests.clearContainer()},
+    () => {listPanelHandlerTests.object.clearText()},
     false
+);
+listPanelHandlerTests.runTest(
+    "update",
+    [],
+    0,
+    () => {
+        for(const line of testLines) listPanelHandlerTests.object.addLine(line);
+    },
+    () => {listPanelHandlerTests.object.clearText()}
 );
