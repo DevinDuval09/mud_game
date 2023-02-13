@@ -13,12 +13,41 @@ const PanelHandler = class {
             this.currentText.push(textSpan.innerText);
         }
     }
-    isUpToDate = (textArray) => {
+    //remove function? currentText gets updated by subclass
+    update() {
+        let counter = 0;
+        console.log(this.currentText);
+        for (const span of this.element.querySelectorAll("span")) {
+            console.log("span text: ", span.innerText, " in currentText: ", this.currentText.includes(span.innerText));
+            if (!this.currentText.includes(span.innerText)) {
+                console.log("adding ", span.innerText);
+                this.currentText.push(span.innerText);
+                ++counter;
+            }
+        }
+        return counter;
+    }
+
+    isUpToDate(textArray) {
         if (this.currentText.length !== textArray.length) return false;
         for (let i = 0; i < this.currentText.length; ++i) {
             if (textArray[i] != this.currentText[i]) return false;
         }
         return true;
+    }
+
+    clearText() {
+        for (const span of this.element.querySelectorAll("span")) {
+            span.innerText = null;
+        }
+        this.currentText = [];
+    }
+
+    static createTextElement(type) {
+        const span = document.createElement("span");
+        const element = document.createElement(type);
+        element.appendChild(span);
+        return element;
     }
 }
 
@@ -33,24 +62,39 @@ const ListPanelHandler = class extends PanelHandler {
         let liList = this.list.querySelectorAll("li");
         //check list size against maxLines
         if (liList && this.maxLines && liList.length == this.maxLines) {
-            //if maxLines has been reached, remove las item from current text
+            //if maxLines has been reached, remove last item from current text
             //later, currentText will be used to repopulate all the list items
             this.currentText.pop();
         } else {
             //if maxLines has not been reached, add another list item and refresh liList
-            this.list.appendChild(document.createElement("li"));
+            const newLi = PanelHandler.createTextElement("li");
+            this.list.appendChild(newLi);
             liList = this.list.querySelectorAll("li");
         }
+        //add new text to current text
         this.currentText.push(text);
-        while (this.list.children.length > this.currentTex) {
-            this.list.removeChild(this.list.children.item(0));
+        //clear all LI
+        while (this.list.children[0]) {
+            this.list.children[0].remove();
+        }
+        //create appropriate number of LI
+        while (this.list.children.length < this.currentText) {
+            const newLi = PanelHandler.createTextElement("li");
+            this.list.appendChild(newLi);
         }
         liList = this.list.querySelectorAll("li");
+        //populate LI
         for (let i = 0; i < liList.length; ++i) {
             //for each item in currentText, add it to a span and put it into an li
-            const newSpan = document.createElement("span");
-            newSpan.appendChild(document.createTextNode(this.currentText[i]));
-            liList[i].appendChild(newSpan);
+            const span = liList[i].querySelector("span");
+            span.appendChild(document.createTextNode(this.currentText[i]));
+        }
+    }
+
+    clearText() {
+        super.clearText();
+        while(this.list.children[0]) {
+            this.list.children[0].remove();
         }
     }
 }
