@@ -96,7 +96,47 @@ const ListPanelHandler = class extends PanelHandler {
     }
 }
 
+const ConditionalNumberPanel = class extends PanelHandler {
+    constructor(elem, current, max) {
+        super(elem)
+        this.currentValue = current;
+        this.maxValue = max;
+    }
+    determineColor() {
+        const percentage = this.currentValue/this.maxValue;
+        if(percentage > .75) return "green";
+        if(percentage > .5) return "yellow";
+        if(percentage > .25) return "orange";
+        return "red";
+    }
+
+    display() {
+        let span = this.element.querySelector("span");
+        if (!span) span = document.createElement("span");
+        const text = `${this.currentValue}/${this.maxValue}`;
+        const displayColor = this.determineColor();
+        span.innerText = null;
+        span.appendChild(document.createTextNode(text));
+        span.style.color = displayColor;
+        this.element.appendChild(span);
+    }
+
+    setCurrentValue(currentVal){
+        this.currentValue = currentVal;
+        this.display();
+    }
+}
+
 const playerLog = new ListPanelHandler(document.getElementById("log"), 50);
 const roomObjects = new ListPanelHandler(document.getElementById("room-objects"), null);
 const roomCharacters = new ListPanelHandler(document.getElementById("room-characters", null));
 const playerInventory = new ListPanelHandler(document.getElementById("inventory"), 20);
+
+//handles incoming and outgoing json packages from/to server
+//connectionHandler
+//parser (separate from connection)
+//receives json describing character/room state, sends appropriate stuff to the different handlers
+
+//managing player state: serverside
+
+//receives command from input and processes or just sends to server?
