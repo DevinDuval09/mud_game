@@ -1,10 +1,11 @@
 import os.path
+import http.server
 import socketserver as sserv
 from .utils.ServerStateManager import ServerStateManager
 
 class Router(sserv.StreamRequestHandler):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, request, client_address, server, *args):
+        super().__init__(request, client_address, server)
         self.manager = ServerStateManager()
     def _create_header(self, http_code:int, file_path:str)->str:
         header = "HTTP/1.1 "
@@ -19,7 +20,9 @@ class Router(sserv.StreamRequestHandler):
     def _send_file(self, header:str, filepath:str)->None:
         response = ''
         header = self._create_header(200, filepath)
-        with open(filepath) as file:
+        dir = os.path.abspath(os.path.dirname(__file__))
+        file_path = os.path.join(dir, filepath)
+        with open(file_path) as file:
             lines = file.readlines()
             encoded_lines = "".join(lines)
             response = (header +  encoded_lines + '\r\n').encode("utf-8")
@@ -30,9 +33,9 @@ class Router(sserv.StreamRequestHandler):
     def handle_get(self, url):
         if url == "/":
             print("Sending main page")
-            file_path = "../mud_client.html"
+            file_path = "../index.html"
             header = self._create_header(200, file_path)
-            self._send_file(header, "../mud_client.html")
+            self._send_file(header, file_path)
         elif os.path.isfile(f"../{url}"):
             print(f"Sending {url}")
             file_path = f"../{url}"
@@ -116,5 +119,5 @@ class Server(sserv.TCPServer):
 
     
 def startServer():
-    server = Server('127.0.0.1')
+    server = Server('127.0.0.1', 50000)
     server.serve_forever()
