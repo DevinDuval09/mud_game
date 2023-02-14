@@ -84,9 +84,9 @@ const unitTest = class {
         if (tearDown) tearDown();
     }
 }
-const playerLogTest = new ListPanelHandler(document.getElementById("log"), 3);
+const playerLogTest = new ListPanelHandler(document.getElementById("log"), "log", 3);
 const listPanelHandlerTests = new unitTest(playerLogTest, document.getElementById("log"));
-const playerHPTest = new ConditionalNumberPanel(document.getElementById("hp"), 100, 100);
+const playerHPTest = new ConditionalNumberPanel(document.getElementById("hp"), "health", 100, 100);
 const conditionalHandlerTests = new unitTest(playerHPTest, document.getElementById("hp"));
 
 const testLines = ["line 1", "line 2", "line 3"];
@@ -167,7 +167,7 @@ newHealthSpan.style.color = "red";
 quarterHealthDiv.appendChild(newHealthSpan);
 conditionalHandlerTests.object.currentValue = 25;
 conditionalHandlerTests.domEditTest(
-    "setCurrentHealth",
+    "setCurrentValue",
     [25],
     quarterHealthDiv,
     document.getElementById("hp"),
