@@ -31,12 +31,15 @@ class Router(sserv.StreamRequestHandler):
 
 
     def handle_get(self, url):
+        dir = os.path.abspath(os.path.dirname(__file__))
+        filepath = os.path.join(dir, f"../{url}")
+        print(filepath)
         if url == "/":
             print("Sending main page")
             file_path = "../index.html"
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
-        elif os.path.isfile(f"../{url}"):
+        elif os.path.isfile(f"{filepath}"):
             print(f"Sending {url}")
             file_path = f"../{url}"
             header = self._create_header(200, file_path)
@@ -47,7 +50,7 @@ class Router(sserv.StreamRequestHandler):
         if self.rfile.readable():
             while True:
                 chunk = self.rfile.readline().decode("utf-8")
-                print("chunk:\n", chunk)
+                #print("chunk:\n", chunk)
                 if len(chunk) > 0 and chunk != '\r\n':
                     data.append(chunk.strip())
                 if chunk == '\r\n':
@@ -79,7 +82,7 @@ class Router(sserv.StreamRequestHandler):
     def handle(self):
         header = self._read_lines()
         request = header[0].split()
-        print(request)
+        #print(request)
         method = request[0]
         url = request[1]
         protocol = request[2]
