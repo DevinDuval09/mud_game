@@ -1,15 +1,16 @@
 import os.path
-import http.server
 import socketserver as sserv
+import json
 from .utils.ServerStateManager import ServerStateManager
 
 class Router(sserv.StreamRequestHandler):
     def __init__(self, request, client_address, server, *args):
         super().__init__(request, client_address, server)
         self.manager = ServerStateManager()
-    def _create_header(self, http_code:int, file_path:str)->str:
+    def _create_header(self, http_code:int, file_path:str, content_type=None)->str:
         header = "HTTP/1.1 "
-        content_type = file_path[file_path.rfind(".") + 1: len(file_path)]
+        if not content_type:
+            content_type = file_path[file_path.rfind(".") + 1: len(file_path)]
         if http_code == 200:
             header = header + '200 OK\r\n'
         header = header + f'Content-Type: text/{content_type}\r\n'
@@ -27,23 +28,32 @@ class Router(sserv.StreamRequestHandler):
             encoded_lines = "".join(lines)
             response = (header +  encoded_lines + '\r\n').encode("utf-8")
         self.request.sendall(response)
-        print(response.decode("utf-8"))
+        #print(response.decode("utf-8"))
 
+    def process_command(self, command):
+        print("processing command " + command)
+        response = self._create_header(200, None, "json") + json.dumps({"dictionary": "test"}) + "\r\n"
+        print(response)
+        response = response.encode("utf-8")
+        self.request.sendall(response)
 
     def handle_get(self, url):
         dir = os.path.abspath(os.path.dirname(__file__))
         filepath = os.path.join(dir, f"../{url}")
-        print(filepath)
+        print(url)
         if url == "/":
             print("Sending main page")
             file_path = "../index.html"
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
+        elif url.find("command:") > -1:
+            self.process_command(url[url.find(":") + 1:])
         elif os.path.isfile(f"{filepath}"):
             print(f"Sending {url}")
             file_path = f"../{url}"
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
+        #else 404 error
     
     def _read_lines(self):
         data = []
