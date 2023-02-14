@@ -4,13 +4,17 @@
 //server sends json describing what the page looks like
 //state manager decodes json and updates panels as necessary
 const PanelHandler = class {
-    constructor(elem) {
+    constructor(elem, description) {
         this.element = elem;
+        this.type = description;
         //current text values of the bottom of the element.
         //All text should be in a span
         this.currentText = [];
-        for (const textSpan of this.element.querySelectorAll("span")) {
-            this.currentText.push(textSpan.innerText);
+        const spanList = this.element.querySelectorAll("span");
+        if (spanList) {
+            for (const textSpan of this.element.querySelectorAll("span")) {
+                this.currentText.push(textSpan.innerText);
+            }
         }
     }
     //remove function? currentText gets updated by subclass
@@ -49,7 +53,7 @@ const PanelHandler = class {
 }
 
 const ListPanelHandler = class extends PanelHandler {
-    constructor(elem, liLimit) {
+    constructor(elem, description, liLimit) {
         super(elem);
         this.list = this.element.querySelector("ul");
         this.maxLines = liLimit;
@@ -97,8 +101,8 @@ const ListPanelHandler = class extends PanelHandler {
 }
 
 const ConditionalNumberPanel = class extends PanelHandler {
-    constructor(elem, current, max) {
-        super(elem)
+    constructor(elem, description, current, max) {
+        super(elem, description)
         this.currentValue = current;
         this.maxValue = max;
     }
@@ -127,10 +131,30 @@ const ConditionalNumberPanel = class extends PanelHandler {
     }
 }
 
-const playerLog = new ListPanelHandler(document.getElementById("log"), 50);
-const roomObjects = new ListPanelHandler(document.getElementById("room-objects"), null);
-const roomCharacters = new ListPanelHandler(document.getElementById("room-characters", null));
-const playerInventory = new ListPanelHandler(document.getElementById("inventory"), 20);
+const ParagraphPanel = class extends PanelHandler {
+    constructor(element, description){
+        super(element, description);
+        this.paragraph = this.element.querySelector("p");
+        if(!this.paragraph) {
+            this.paragraph = document.createElement("p");
+            this.element.appendChild(this.paragraph);
+        }
+    }
+
+    updateText(text){
+        this.paragraph.innerText = null;
+        this.paragraph.appendChild(document.createTextNode(text));
+    }
+}
+
+const playerLog = new ListPanelHandler(document.getElementById("log"), "event", 50);
+const roomDescription = new ParagraphPanel(document.getElementById("room-description"), "roomDescription");
+const roomObjects = new ListPanelHandler(document.getElementById("room-objects"), "roomObjects", null);
+const roomCharacters = new ListPanelHandler(document.getElementById("room-characters", "roomCharacters", null));
+const playerInventory = new ListPanelHandler(document.getElementById("inventory"), "playerInventory", 20);
+const playerHealth = new ConditionalNumberPanel(document.getElementById("hp"), "playerHp");
+const playerMana = new ConditionalNumberPanel(document.getElementById("mana"), "playerMana");
+const playerEquipment = new ListPanelHandler(document.getElementById("equipment"), "playerEquipment", null);
 
 //handles incoming and outgoing json packages from/to server
 //connectionHandler
@@ -138,5 +162,55 @@ const playerInventory = new ListPanelHandler(document.getElementById("inventory"
 //receives json describing character/room state, sends appropriate stuff to the different handlers
 
 //managing player state: serverside
+/**
+ * Receives json data from connectionHandler and updates the appropriate panel.
+ * Panel types (as labeled on backend):
+ * -event
+ * -room
+ * -character
+ */
+const objectRouter = class {
+    constructor(){
+        this.panels = [];
+    }
 
-//receives command from input and processes or just sends to server?
+    addPanel(panel){
+        this.panels.push(panel);
+    }
+
+    handleJson(serverJson) {
+        const subJsons = this.splitServerJson(serverJson);
+    }
+    /**
+     * Split the incoming json from the server into the subdivided jsons used on the front end.
+     * The following are the subdivided json types:
+     * -event
+     * -roomDescription
+     * -roomObjects
+     * -roomCharacters
+     * -playerInventory
+     * -playerHp
+     * -playerMana
+     * -playerStatus
+     * -playerEquipment
+     * @param {string} json - string in a json format
+     * @return {array} - array of jsons split into the above types
+     */
+    splitServerJson(json) {
+
+    }
+}
+
+/**
+ * Maintains connection to back end. When it receives JSON data from the server, it 
+ * sends it to a connected objectRouter. When an input is entered, it is run through the
+ * inputHandler before being passed to the server.
+ */
+const connectionHandler = class {
+    constructor(){
+        this.inputSocket = null;
+        this.outputSocket = null;
+        this.parser = new objectRouter();
+        this.inputHandler = null;
+    }
+}
