@@ -1,5 +1,5 @@
-from Character import Character
-from Skills import *
+from .Character import Character
+from .Skills import *
 class Wizard(Character):
     def __init__(self, *args, **kwargs):
         super().__init__(specific_prof=[EquipmentTypes.DAGGERS,

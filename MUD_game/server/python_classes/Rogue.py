@@ -1,6 +1,6 @@
 from math import ceil
-from Character import Character
-from Skills import *
+from .Character import Character
+from .Skills import *
 class Rogue(Character):
     def __init__(self, expertise: list, *args, **kwargs):
         super().__init__(general_prof=[EquipmentClasses.LIGHT_ARMOR,

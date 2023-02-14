@@ -1,4 +1,4 @@
-from mongo import mongo
+from .mongo import mongo
 from ..python_classes.Fighter import Fighter
 from ..python_classes.Wizard import Wizard
 from ..python_classes.Rogue import Rogue

@@ -111,9 +111,10 @@ class Server(sserv.TCPServer):
         super().__init__((server, port), Router)
         self.server = server
         self.port = port
-        self.html = "../mud_client.html"
-        self.stylesheet = "../css_sheets/MUD_client.css"
+        self.html = "../index.html"
+        self.stylesheet = "../client/css/stylesheet.css"
+
     
-if __name__ == '__main__':
+def startServer():
     server = Server('127.0.0.1')
     server.serve_forever()
