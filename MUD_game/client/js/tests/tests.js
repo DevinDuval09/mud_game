@@ -74,7 +74,7 @@ const unitTest = class {
             }
             if (checkStyle){
             //compare node style
-            for (const styleAttribute of Object.keys(expectedElement.style)) {
+            for (const styleAttribute in expectedElement.style) {
                 console.assert(expectedElement.style[styleAttribute] == testElement.style[styleAttribute],
                     `${testName}::Expected ${styleAttribute} value ${expectedElement.style[styleAttribute]}, got ${testElement.style[styleAttribute]}`);
             }
@@ -86,6 +86,9 @@ const unitTest = class {
 }
 const playerLogTest = new ListPanelHandler(document.getElementById("log"), 3);
 const listPanelHandlerTests = new unitTest(playerLogTest, document.getElementById("log"));
+const playerHPTest = new ConditionalNumberPanel(document.getElementById("hp"), 100, 100);
+const conditionalHandlerTests = new unitTest(playerHPTest, document.getElementById("hp"));
+
 const testLines = ["line 1", "line 2", "line 3"];
 const createDivWithUl = (list, precedingText) => {
     const expectedDiv = document.createElement("div");
@@ -108,7 +111,7 @@ const createDivWithUl = (list, precedingText) => {
 listPanelHandlerTests.domEditTest(
     "addLine",
     [testLines[0]],
-    createDivWithUl([testLines[0]], "log of stuff you've done"),
+    createDivWithUl([testLines[0]], "Recent Events:"),
     document.getElementById("log"),
     null,
     null,
@@ -119,7 +122,7 @@ listPanelHandlerTests.domEditTest(
 listPanelHandlerTests.domEditTest (
     "addLine",
     ["line4"],
-    createDivWithUl([testLines[1], testLines[2], "line4"], "log of stuff you've done"),
+    createDivWithUl([testLines[1], testLines[2], "line4"], "Recent Events:"),
     document.getElementById("log"),
     null,
     () => {
@@ -138,3 +141,38 @@ listPanelHandlerTests.runTest(
     },
     () => {listPanelHandlerTests.object.clearText()}
 );
+
+const fullHealthDiv = document.createElement("div");
+fullHealthDiv.appendChild(document.createTextNode("Health: "));
+const healthSpan = document.createElement("span");
+healthSpan.appendChild(document.createTextNode("100/100"));
+healthSpan.style.color = "green";
+fullHealthDiv.appendChild(healthSpan);
+conditionalHandlerTests.domEditTest(
+    "display",
+    [],
+    fullHealthDiv,
+    document.getElementById("hp"),
+    null,
+    null,
+    null,
+    true,
+    "hpPanelTest");
+
+const quarterHealthDiv = document.createElement("div");
+quarterHealthDiv.appendChild(document.createTextNode("Health: "));
+const newHealthSpan = document.createElement("span");
+newHealthSpan.appendChild(document.createTextNode("25/100"));
+newHealthSpan.style.color = "red";
+quarterHealthDiv.appendChild(newHealthSpan);
+conditionalHandlerTests.object.currentValue = 25;
+conditionalHandlerTests.domEditTest(
+    "setCurrentHealth",
+    [25],
+    quarterHealthDiv,
+    document.getElementById("hp"),
+    null,
+    null,
+    () => {conditionalHandlerTests.object.clearText()},
+    true,
+    "hpPanel.setCurrentHealthTest");
