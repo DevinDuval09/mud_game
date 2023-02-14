@@ -14,21 +14,21 @@
   <body class="grid-container">
     <div class="container">
       <div class="header">Header</div>
-      <div class="log" id="log">log of stuff you've done<ul></ul></div>
-      <div class="room" id="room-description">Room description</div>
+      <div class="log" id="log">Recent Events:<ul></ul></div>
+      <div class="room" id="room-description">Room:</div>
     </div>
       <div class="container">
-        <div class="objects info-box" id="room-objects">Stuff in the room<ul></ul></div>
-        <div class="characters info-box" id="room-characters">Creatures in the room<ul></ul></div>
+        <div class="objects info-box" id="room-objects">Things you see:<ul></ul></div>
+        <div class="characters info-box" id="room-characters">Creatures you see:<ul></ul></div>
       </div>
       <div class="container">
-        <div class="inventory info-box" id="inventory">You're inventory<ul></ul></div>
+        <div class="inventory info-box" id="inventory">Inventory:<ul></ul></div>
         <div class="info-box" id="status-container">
-          <div class="status" id="hp">Your max and current HP</div>
-          <div class="status" id="status">Your status</div>
-          <div class="status" id="mana">Your max and current mana</div>
+          <div class="status" id="hp">Health: </div>
+          <div class="status" id="status">Status: </div>
+          <div class="status" id="mana">Mana: </div>
         </div>
-        <div class="equipment info-box" id="equipment">You're equipped equipment</div>
+        <div class="equipment info-box" id="equipment">Equipment:</div>
       </div>
       <input id="command" class="user_input" id="user-input"></input>
       <button onclick="postCommand()" class="button">Enter Command</button>
