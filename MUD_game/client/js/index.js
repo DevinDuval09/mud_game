@@ -1,5 +1,6 @@
 "use strict";
-
+const defaultPort = 50000;
+const defaultURL = "127.0.0.1";
 //build a state manager to handle incoming/outgoing messages from server
 //server sends json describing what the page looks like
 //state manager decodes json and updates panels as necessary
@@ -197,7 +198,7 @@ const objectRouter = class {
      * @return {array} - array of jsons split into the above types
      */
     splitServerJson(json) {
-
+        console.log(json);
     }
 }
 
@@ -212,5 +213,31 @@ const connectionHandler = class {
         this.outputSocket = null;
         this.parser = new objectRouter();
         this.inputHandler = null;
+        this.input = document.querySelector("input[type=text]");
+    }
+
+    sendCommand(evt) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `${defaultURL}/command:${this.input.value.trim()}`);
+        xhr.send();
+        xhr.onload = () => {
+            if (xhr.readState == 4 && xhr.status == 200) {
+                const serverJson = xhr.response;
+                console.log(serverJson);
+                this.parser.splitServerJson(serverJson);
+            } else {
+                console.log(`Error: ${xhr.status}`)
+            }
+        }
+        this.input.value = null;
     }
 }
+
+const connector = new connectionHandler();
+const form = document.querySelector("form");
+form.addEventListener("submit", (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    connector.sendCommand(evt);
+}
+);
