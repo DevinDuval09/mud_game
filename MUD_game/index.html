@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>MUD client</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="Devin Duval">
+    <meta name="description" content="A mud I made that uses python backend 
+        and HTML, CSS, and Javascript fronend">
+    <link rel="stylesheet" href="./client/css/stylesheet.css">
+    <script type="text/javascript" src="./client/js/index.js" defer></script>
+    <script type="text/javascript" src="./client/js/tests/tests.js" defer></script>
+  </head>
+  <body class="grid-container">
+    <div class="container">
+      <div class="header">Header</div>
+      <div class="log" id="log">Recent Events:<ul></ul></div>
+      <div class="room" id="room-description">Room:</div>
+    </div>
+      <div class="container">
+        <div class="objects info-box" id="room-objects">Things you see:<ul></ul></div>
+        <div class="characters info-box" id="room-characters">Creatures you see:<ul></ul></div>
+      </div>
+      <div class="container">
+        <div class="inventory info-box" id="inventory">Inventory:<ul></ul></div>
+        <div class="info-box" id="status-container">
+          <div class="status" id="hp">Health: </div>
+          <div class="status" id="status">Status: </div>
+          <div class="status" id="mana">Mana: </div>
+        </div>
+        <div class="equipment info-box" id="equipment">Equipment:</div>
+      </div>
+      <form>
+        <input id="command" class="user_input" id="user-input" type="text"></input>
+        <input type="submit" class="button">Enter Command</input>
+      </form>
+  </body>
+</html>
