@@ -1,4 +1,4 @@
-from .mongo import mongo
+from .ObjectGenerator import create_character, verify_password
 class GameStateManager:
     _STATES = ["LOGGED_OUT", "ACTIVE", "CHARACTER_CREATION"]
     def __init__(self):
@@ -25,8 +25,5 @@ class GameStateManager:
             pass
     def create_character(self, character, password, **kwargs):
         #hash password
-        with mongo:
-            #verify that character name isn't taken
-            #create load character into database
-            #switch character status to active
-            pass
+        hashed = None
+        create_character(character, hashed, **kwargs)
