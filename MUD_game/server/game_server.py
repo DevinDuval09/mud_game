@@ -2,11 +2,9 @@ import os.path
 import socketserver as sserv
 import json
 from .utils.MudGameEngine import MudGameEngine
+from .utils.GameStateManager import GameStateManager
 
 class Router(sserv.StreamRequestHandler):
-    def __init__(self, request, client_address, server, *args):
-        super().__init__(request, client_address, server)
-        self.engine = MudGameEngine()
     def _create_header(self, http_code:int, file_path:str, content_type=None)->str:
         header = "HTTP/1.1 "
         if not content_type:
@@ -41,8 +39,7 @@ class Router(sserv.StreamRequestHandler):
     def handle_get(self, url):
         dir = os.path.abspath(os.path.dirname(__file__))
         filepath = os.path.join(dir, f"../{url}")
-        print(url)
-        if url == "/":
+        if url == "/" and self.server.state_manager.get_status(self.client_address) == "LOGGED_OUT":
             print("Sending login page")
             file_path = "../client/html/login.html"
             header = self._create_header(200, file_path)
@@ -101,6 +98,8 @@ class Router(sserv.StreamRequestHandler):
         method = request[0]
         url = request[1]
         protocol = request[2]
+        if self.client_address not in self.server.state_manager.users():
+            self.server.state_manager.add_user(self.client_address)
 
         if "HTTP" in protocol:
             if method.upper() == "GET":
@@ -130,11 +129,12 @@ class Router(sserv.StreamRequestHandler):
 class Server(sserv.TCPServer):
     def __init__(self, server:str, port:int=50000):
         super().__init__((server, port), Router)
+        self.engine = MudGameEngine()
+        self.state_manager = GameStateManager()
         self.server = server
         self.port = port
         self.html = "../index.html"
         self.stylesheet = "../client/css/stylesheet.css"
-
     
 def startServer():
     server = Server('127.0.0.1', 50000)
