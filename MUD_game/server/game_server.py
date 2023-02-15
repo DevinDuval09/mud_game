@@ -1,12 +1,12 @@
 import os.path
 import socketserver as sserv
 import json
-from .utils.ServerStateManager import ServerStateManager
+from .utils.MudGameEngine import MudGameEngine
 
 class Router(sserv.StreamRequestHandler):
     def __init__(self, request, client_address, server, *args):
         super().__init__(request, client_address, server)
-        self.manager = ServerStateManager()
+        self.engine = MudGameEngine()
     def _create_header(self, http_code:int, file_path:str, content_type=None)->str:
         header = "HTTP/1.1 "
         if not content_type:
@@ -32,7 +32,8 @@ class Router(sserv.StreamRequestHandler):
 
     def process_command(self, command):
         print("processing command " + command)
-        response = self._create_header(200, None, "json") + json.dumps({"dictionary": "test"}) + "\r\n"
+        updated_state = self.engine.execute_player_input(command)
+        response = self._create_header(200, None, "json") + json.dumps(updated_state) + "\r\n"
         print(response)
         response = response.encode("utf-8")
         self.request.sendall(response)
