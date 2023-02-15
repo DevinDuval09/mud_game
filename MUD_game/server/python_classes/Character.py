@@ -105,7 +105,8 @@ class Character:
         return save_dict
 
 
-    
+    #player only perform changes to player if appropriate. Always return the appropriate jsonify dictionary
+    #to send to the front end.
     def grab(self, item: Item):
         #take item out of current room and put into inventory
         pass
@@ -113,8 +114,8 @@ class Character:
     def drop(self):
         pass
 
-    def move(self):
-        pass
+    def move(self, direction) -> dict:
+        return {"log": f"You move {direction}."}
 
     def look(self):
         pass
