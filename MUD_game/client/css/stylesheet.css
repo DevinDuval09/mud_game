@@ -13,11 +13,18 @@ div{
     border-radius: 25px;
     min-width: 20em;
 }
+.error{
+    height: 2em;
+    color: white;
+}
 .header{
     display: block;
     height: 2em; 
     color:red; 
     text-align: center;
+}
+.invisible{
+    display:none;
 }
 .log{
     display:block;
