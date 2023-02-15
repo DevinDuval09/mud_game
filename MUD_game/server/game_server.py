@@ -43,10 +43,14 @@ class Router(sserv.StreamRequestHandler):
         filepath = os.path.join(dir, f"../{url}")
         print(url)
         if url == "/":
-            print("Sending main page")
-            file_path = "../index.html"
+            print("Sending login page")
+            file_path = "../client/html/login.html"
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
+        elif url == "/character_creation":
+            print("Sending character creation page")
+            header = self._create_header(501, None, "text/text")
+            self._send_file(header, None)
         elif url.find("command:") > -1:
             self.process_command(url[url.find(":") + 1:])
         elif os.path.isfile(f"{filepath}"):
