@@ -6,15 +6,16 @@ from ..python_classes.Room import Room
 from ..python_classes.utils import create_character_fromId
 from ..python_classes.Items import create_item_fromId
 from ..python_classes.Items import Item
-import json #to create json objects to pass to frontend. see json encoder
 
 '''
 ObjectManager is here to track the state of active objects on the server.
 '''
-class ServerStateManager:
+class MudGameEngine:
 
     def __init__(self):
+        #characters logged into this instance
         self.active_characters = []
+        #rooms that have been generated for this instance
         self.active_rooms={}
 
     def create_character(self, name:str, *args, char_class=None, **kwargs):
@@ -42,6 +43,24 @@ class ServerStateManager:
     def create_room(self, id:int):
         new_room = Room.fromId(id)
         self.active_rooms[id] = new_room
+        return new_room
 
-    def execute_player_input(self, player: str, command: str) -> str:
-        pass
+    def execute_player_input(self, player: str, command: str) -> dict:
+        character = self.active_characters[player]
+        room = None
+        if(character.room) in self.active_rooms.keys():
+            room = self.active_rooms[character.room]
+        else:
+            room = self.create_room(character.room)
+        args = command.lower().split(" ")
+        command = args.pop(0)
+        if command == "move":
+            #remove character from current room
+            #put character in new room
+            #update characters current room
+            #generate message to moving player
+            #generate messages to other players
+            pass
+
+
+
