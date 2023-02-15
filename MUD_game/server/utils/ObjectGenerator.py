@@ -64,3 +64,15 @@ def create_item():
             return
         new_item.save()
 
+def create_character(character_name, password, **kwargs):
+    with mongo:
+        #check that character name doesn't exist
+        #create character
+        #save character
+        pass
+
+def verify_password(character_name, password):
+    with mongo:
+        #get character password
+        db_password = mongo.Players.find_one({"username": character_name})
+
