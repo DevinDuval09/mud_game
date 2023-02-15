@@ -18,15 +18,15 @@
       <form class="container">
         <label id="username-errors" class="error invisible"></label>
         <br>
-        <input id="username" class="user_input" type="text" placeholder="Character"></input>
+        <input id="username" class="user_input" type="text" placeholder="Character" required></input>
         <br>
         <label id="password-errors" class="error invisible"></label>
         <br>
-        <input id="password" class="user_input" type="text" placeholder="Password"></input>
+        <input id="password" class="user_input" type="password" placeholder="Password" minlength=8 required></input>
         <br>
         <input type="submit" class="button" value="Login">
         <br>
-        <a href="">Create new Character</a>
+        <a href="/character_creation">Create new Character</a>
       </form>
   </body>
 </html>
