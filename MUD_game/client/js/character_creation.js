@@ -11,8 +11,14 @@ const roll4d6DropLowest = () => {
     }
     rolls.sort();
     rolls.shift();
-    console.log(rolls);
     return rolls.reduce((total, next)=> {return total + next;});
 }
 
-console.log(roll4d6DropLowest());
+const populateValues = () => {
+    const attributeValueInputs = document.querySelectorAll("input.character-attribute");
+    for (const input of attributeValueInputs) {
+        input.value = roll4d6DropLowest();
+    }
+}
+
+populateValues();
