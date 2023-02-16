@@ -3,15 +3,16 @@ import socketserver as sserv
 import json
 from .utils.MudGameEngine import MudGameEngine
 from .utils.GameStateManager import GameStateManager
+from .utils.ObjectGenerator import verify_password, character_exists
 
 class Router(sserv.StreamRequestHandler):
     def _create_header(self, http_code:int, file_path:str, content_type=None)->str:
         header = "HTTP/1.1 "
         if not content_type:
-            content_type = file_path[file_path.rfind(".") + 1: len(file_path)]
+            content_type = "text/" + file_path[file_path.rfind(".") + 1: len(file_path)]
         if http_code == 200:
             header = header + '200 OK\r\n'
-        header = header + f'Content-Type: text/{content_type}\r\n'
+        header = header + f'Content-Type: {content_type}\r\n'
         header = header + f'Connection: keep-alive\r\n\r\n'
 
         return header
@@ -27,6 +28,12 @@ class Router(sserv.StreamRequestHandler):
             response = (header +  encoded_lines + '\r\n').encode("utf-8")
         self.request.sendall(response)
         #print(response.decode("utf-8"))
+
+    def _send_json(self, dict)->None:
+        header = self._create_header(200, None, "application/json")
+        print(f"Sending json of: {dict}")
+        response = (header + json.dumps(dict) + '\r\n').encode("utf-8")
+        self.request.sendall(response)
 
     def process_command(self, command):
         print("processing command " + command)
@@ -49,6 +56,11 @@ class Router(sserv.StreamRequestHandler):
             file_path = "../client/html/character_creation.html"
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
+        elif url.find("verify:") > -1:
+            print("Verifying name availability")
+            _, name = url.split(":")
+            response = {"name_available": not character_exists(name.strip())}
+            self._send_json(response)
         elif url.find("command:") > -1:
             self.process_command(url[url.find(":") + 1:])
         elif os.path.isfile(f"{filepath}"):
