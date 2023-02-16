@@ -13,13 +13,14 @@
   <body class="grid-container">
         <div class="container">
           <div class="header">Header</div>
+          <div id="error" class="error"><ul></ul></div>
         </div>
-      <form class="container character-form">
-        <input type="text" placeholder="Character Name:" required>
+      <form id="character-form" class="container character-form">
+        <input id="character-name" type="text" placeholder="Character Name:" required>
         <br>
-        <input type="text" placeholder="Password:" required>
+        <input id="password" type="text" placeholder="Password:" required>
         <br>
-        <input type="text" placeholder="Confirm password:" required>
+        <input id="password2" type="text" placeholder="Confirm password:" required>
         <div>
             <label class="select-label">Choose a class:</label>
             <select id="character_class" class="user_select" required>
