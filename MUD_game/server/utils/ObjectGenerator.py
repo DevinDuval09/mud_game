@@ -74,5 +74,15 @@ def create_character(character_name, password, **kwargs):
 def verify_password(character_name, password):
     with mongo:
         #get character password
-        db_password = mongo.Players.find_one({"username": character_name})
+        doc = mongo.Players.find_one({"username": character_name})
+        if doc and password == doc["password"]:
+            return True
+        return False
+
+def character_exists(character_name):
+    with mongo:
+        existing_character = mongo.Players.find_one({"name": character_name.lower().capitalize()})
+        if existing_character:
+            return True
+        return False
 
