@@ -221,7 +221,7 @@ const connectionHandler = class {
         xhr.open("GET", `${defaultURL}/command:${this.input.value.trim()}`);
         xhr.send();
         xhr.onload = () => {
-            if (xhr.readState == 4 && xhr.status == 200) {
+            if (xhr.readyState == 4 && xhr.status == 200) {
                 const serverJson = xhr.response;
                 console.log(serverJson);
                 this.parser.splitServerJson(serverJson);
@@ -239,5 +239,5 @@ form.addEventListener("submit", (evt) => {
     evt.preventDefault();
     evt.stopPropagation();
     connector.sendCommand(evt);
-}
+    }
 );
