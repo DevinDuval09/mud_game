@@ -13,6 +13,20 @@ div{
     border-radius: 25px;
     min-width: 20em;
 }
+
+.character-attribute {
+    color: white;
+    display: block;
+    text-align: center;
+}
+.character-form {
+    text-align: center;
+}
+.character-form input[type="submit"] {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 .error{
     height: 2em;
     color: white;
@@ -36,6 +50,10 @@ div{
     display: block;
     height: 6em; 
     color: white;
+}
+.character-attribute {
+    color: white;
+    width: 3em;
 }
 .container {
     background-color: darkred;
@@ -69,6 +87,16 @@ div{
 .status {
     color: blue;
 }
+.stat-selector {
+    display: inline-block;
+    min-width: 1em;
+    width: 10em;
+    text-align: center;
+}
+.select-label {
+    display:block;
+    color: white;
+}
 .user_input{
     width: 50em;
     height:1.5em; 
@@ -88,6 +116,7 @@ div{
 
 .grid-container input{
     background-color: black;
+    color: white;
     padding-left: 40px;
     padding-right: 40px;
     padding-top: 5px;
