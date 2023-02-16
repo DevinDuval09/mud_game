@@ -1,5 +1,5 @@
 "use strict";
-
+const defaultURL = "127.0.0.1";
 const rollDice = (diceSize) => {
     return Math.floor(Math.random() * diceSize) + 1;
 }
@@ -36,14 +36,55 @@ const populateList = (strings, listElement) => {
     }
 }
 
+const getServerResponse = (url, callback) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = (evt) => {
+        evt.preventDefault();
+        evt.stopPropagation();
+        if(xhr.readyState == 4 && xhr.status == 200) {
+            console.log("received response");
+            callback(xhr.responseText);
+        }
+    }
+    xhr.open("GET", url);
+    xhr.send();
+}
+
+const nameValidation = (string) => {
+    const serverResponse = JSON.parse(string);
+    const errorList = document.querySelector("#error > ul");
+    deleteChildren(errorList);
+    if (!serverResponse["name_available"]) {
+        const errors = [];
+        serverResponse["name_available"] == false? errors.push("Name not available.") : errors.push(serverResponse);
+        populateList(errors, errorList);
+        return false;
+    };
+    return true;
+}
+
+const verifyNameFromChange = (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
+    const name = evt.target.value.trim();
+    if(name) {
+        const url = `${defaultURL}/verify:${name}`;
+        getServerResponse(url, nameValidation);
+    }
+}
+
 const validateForm = (evt) => {
     evt.preventDefault();
     evt.stopPropagation();
     const form = evt.target;
     const attributeArray = [];
     const errorList = document.querySelector("#error > ul");
-    deleteChildren(errorList);
     const errors = [];
+    //if name not available is listed, keep that in the error list
+    if (errorList.innerText.indexOf("Name not available.") > -1) {
+        errors.push("Name not available.");
+    }
+    deleteChildren(errorList);
     if (document.getElementById("password").value !== document.getElementById("password2").value) {
         errors.push("Passwords do not match.");
     }
@@ -60,9 +101,11 @@ const validateForm = (evt) => {
         populateList(errors, errorList);
         return;
     }
+    console.lof("submitting form");
     form.submit();
 
 }
 
 populateValues();
 document.querySelector("form").addEventListener("submit", validateForm);
+document.getElementById("character-name").addEventListener("change", verifyNameFromChange);
