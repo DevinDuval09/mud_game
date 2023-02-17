@@ -69,45 +69,45 @@ class Router(sserv.StreamRequestHandler):
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
         #else 404 error
-    
-    def _read_lines(self):
-        data = []
+    def _read_body(self, size):
+        num_bytes = int(size)
+        _bytes = self.rfile.read(num_bytes)
+        body = _bytes.decode("utf-8")
+        print(f"body: {body}")
+        return body
+    def _read_headers(self):
+        headers = {}
         if self.rfile.readable():
             while True:
                 chunk = self.rfile.readline().decode("utf-8")
-                #print("chunk:\n", chunk)
                 if len(chunk) > 0 and chunk != '\r\n':
-                    data.append(chunk.strip())
+                    header, values = chunk.split(":", 1)
+                    headers[header.strip()] = values.strip()
                 if chunk == '\r\n':
                     break
-        return data
+        return headers
     
-    def handle_post(self, data):
-        header = {}
-        top_line = data.pop(0).split()
-
-        header["request"] = top_line[0]
-        header["resource"] = top_line[1]
-        header["protocal"] = top_line[2]
-
-        for line in data:
-            key, value = line.split(":", 1)
-            header[key.lower()] = value.lower().strip()
-        
-        body = ''
-        if "content-length" in header.keys():
-            size = int(header["content-length"])
-            body = self.rfile.read(size).decode("utf-8")
-        else:
-            body = "Not implemented"
-        
-        print(header)
-        print(body)
+    def _parse_form(form_data):
+        split_data = form_data.split("&")
+        form_dict = {}
+        for user_input in split_data:
+            key, val = user_input.split("=")
+            form_dict[key] = val
+        return form_dict
+    
+    def handle_post(self, url):
+        if(url == "/character_creation"):
+            character_data = self._parse_form(self.body)
+            print(character_data)
 
     def handle(self):
-        header = self._read_lines()
-        request = header[0].split()
-        #print(request)
+        self.startline = self.rfile.readline().decode("utf-8")
+        self.headers = self._read_headers()
+        if "Content-Length" in self.headers.keys():
+            self.body = self._read_body(self.headers["Content-Length"])
+        else:
+            self.body = []
+        request = self.startline.split()
         method = request[0]
         url = request[1]
         protocol = request[2]
@@ -118,7 +118,7 @@ class Router(sserv.StreamRequestHandler):
             if method.upper() == "GET":
                 self.handle_get(url)
             if method.upper() == "POST":
-                self.handle_post(header)
+                self.handle_post(url)
     
     @staticmethod
     def _request_to_dict(request:str)->dict:
