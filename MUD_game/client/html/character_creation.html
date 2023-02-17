@@ -15,23 +15,23 @@
           <div class="header">Header</div>
           <div id="error" class="error"><ul></ul></div>
         </div>
-      <form id="character-form" class="container character-form">
-        <input id="character-name" type="text" placeholder="Character Name:" required>
+      <form id="character-form" class="container character-form" action="/character_creation" method="POST">
+        <input name="character-name" id="character-name" type="text" placeholder="Character Name:" required>
         <br>
-        <input id="password" type="text" placeholder="Password:" required>
+        <input name="password" id="password" type="text" placeholder="Password:" required>
         <br>
         <input id="password2" type="text" placeholder="Confirm password:" required>
         <div>
             <label class="select-label">Choose a class:</label>
-            <select id="character_class" class="user_select" required>
+            <select name="character-class" id="character_class" class="user_select" required>
                 <option value="fighter">Fighter</option>
                 <option value="rogue">Rogue</option>
                 <option value="wizard">Wizard</option>
             </select>
         </div>
         <div class="stat-selector">
-            <input id="attribute1" class="character-attribute" readonly></input>
-            <select id="selection1" class="user_select">
+            <input name="attribute1-value" id="attribute1" class="character-attribute" readonly></input>
+            <select name="attribute1-name" id="selection1" class="user_select">
                 <option value="strength">Strength</option>
                 <option value="dexterity">Dexterity</option>
                 <option value="constitution">Constitution</option>
@@ -41,8 +41,8 @@
             </select>
         </div>
         <div class="stat-selector">
-            <input id="attribute2" class="character-attribute" readonly></input>
-            <select id="selection2" class="user_select">
+            <input name="attribute2-value" id="attribute2" class="character-attribute" readonly></input>
+            <select name="attribute2-name" id="selection2" class="user_select">
                 <option value="dexterity">Dexterity</option>
                 <option value="strength">Strength</option>
                 <option value="constitution">Constitution</option>
@@ -52,8 +52,8 @@
             </select>
         </div>
         <div class="stat-selector">
-            <input id="attribute3" class="character-attribute" readonly></input>
-            <select id="selection3" class="user_select">
+            <input name="attribute3-value" id="attribute3" class="character-attribute" readonly></input>
+            <select name="attribute3-name" id="selection3" class="user_select">
                 <option value="constitution">Constitution</option>
                 <option value="strength">Strength</option>
                 <option value="dexterity">Dexterity</option>
@@ -63,8 +63,8 @@
             </select>
         </div>
         <div class="stat-selector">
-            <input id="attribute4" class="character-attribute" readonly></input>
-            <select id="selection4" class="user_select">
+            <input name="attribute4-value" id="attribute4" class="character-attribute" readonly></input>
+            <select name="attribute4-name" id="selection4" class="user_select">
                 <option value="wisdom">Wisdom</option>
                 <option value="strength">Strength</option>
                 <option value="dexterity">Dexterity</option>
@@ -74,8 +74,8 @@
             </select>
         </div>
         <div class="stat-selector">
-            <input id="attribute5" class="character-attribute" readonly></input>
-            <select id="selection5" class="user_select">
+            <input name="attribute5-value" id="attribute5" class="character-attribute" readonly></input>
+            <select name="attribute5-name" id="selection5" class="user_select">
                 <option value="intelligence">Intelligence</option>
                 <option value="strength">Strength</option>
                 <option value="dexterity">Dexterity</option>
@@ -85,8 +85,8 @@
             </select>
         </div>
         <div class="stat-selector">
-            <input id="attribute6" class="character-attribute" readonly></input>
-            <select id="selection6" class="user_select">
+            <input name="attribute6-value" id="attribute6" class="character-attribute" readonly></input>
+            <select name="attribute6-name" id="selection6" class="user_select">
                 <option value="charisma">Charisma</option>
                 <option value="strength">Strength</option>
                 <option value="dexterity">Dexterity</option>
