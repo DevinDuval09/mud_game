@@ -1,6 +1,7 @@
 import os.path
 import socketserver as sserv
 import json
+import re
 from .utils.MudGameEngine import MudGameEngine
 from .utils.GameStateManager import GameStateManager
 from .utils.ObjectGenerator import verify_password, character_exists
@@ -73,7 +74,6 @@ class Router(sserv.StreamRequestHandler):
         num_bytes = int(size)
         _bytes = self.rfile.read(num_bytes)
         body = _bytes.decode("utf-8")
-        print(f"body: {body}")
         return body
     def _read_headers(self):
         headers = {}
@@ -87,13 +87,36 @@ class Router(sserv.StreamRequestHandler):
                     break
         return headers
     
-    def _parse_form(form_data):
+    def _parse_urlencoded_form(self, form_data):
+        for key, val in self.headers.items():
+            print("Header: " + key + " val: " + val)
         split_data = form_data.split("&")
         form_dict = {}
         for user_input in split_data:
             key, val = user_input.split("=")
             form_dict[key] = val
         return form_dict
+
+    def _parse_multipart_form(self, form_data):
+        form_dict = {}
+        boundary = self.headers["Content-Type"].split("boundary=")[1].strip()
+        chunks = form_data.split(boundary)
+        for chunk in chunks:
+            #print("chunk\n:" + chunk)
+            key_obj = re.search(r'(?<=name=")([a-z]+)(?="\s)', chunk)
+            value_obj = re.search(r'(?<=\s)([A-Za-z0-9]+)(?=\s)', chunk)
+            if key_obj and value_obj:
+                form_dict[key_obj.group()] = value_obj.group()
+        return form_dict
+
+    def _parse_form(self, form):
+        if self.headers["Content-Type"] == "application/x-www-form-urlencoded":
+            return self._parse_urlencoded_form(form)
+        elif "multipart/form-data" in self.headers["Content-Type"]:
+            return self._parse_multipart_form(form)
+        else:
+            print(f"Unable to decode Content-Type {self.headers['Content-Type']}")
+            return None
     
     def handle_post(self, url):
         if(url == "/character_creation"):
