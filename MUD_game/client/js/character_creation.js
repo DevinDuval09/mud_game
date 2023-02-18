@@ -73,10 +73,38 @@ const verifyNameFromChange = (evt) => {
     }
 }
 
+const transformFormInputs = (formdata) => {
+    const transformedData = new FormData();
+    let success = true;
+    for (const attribute_array of formdata.entries()){
+        if (/character-[a-z]{4}/.test(attribute_array[0])) {
+            const serverAttr = attribute_array[0].match(/(?<=-)[a-z]{4}/g);
+            console.log("server attribute: ", serverAttr);
+            transformedData.append(serverAttr, attribute_array[1]);
+            continue;
+        }
+        if (/attribute[\d]-value/.test(attribute_array[0])) {
+            const inputNumber = attribute_array[0].match(/(?<=attribute)\d/g);
+            transformedData.append(formdata.get(`attribute${inputNumber}-name`), attribute_array[1]);
+            continue;
+        }
+        if (/attribute[\d]-name/.test(attribute_array[0])) {
+            continue;
+        }
+        if (attribute_array[0] == "password") {
+            transformedData.append(attribute_array[0], attribute_array[1]);
+            continue;
+        }
+        success = false;
+
+        }
+        return success? transformedData: null;
+    }
+
 const validateForm = (evt) => {
     evt.preventDefault();
     evt.stopPropagation();
-    const form = evt.target;
+    const form = document.querySelector("form");
     const attributeArray = [];
     const errorList = document.querySelector("#error > ul");
     const errors = [];
@@ -101,9 +129,20 @@ const validateForm = (evt) => {
         populateList(errors, errorList);
         return;
     }
-    console.lof("submitting form");
-    form.submit();
-
+    const raw_data = new FormData(document.querySelector("form"));
+    const cleaned_data = transformFormInputs(raw_data);
+    if (!cleaned_data) {
+        console.log("Error transforming data.");
+        return;
+    }
+    const post = new XMLHttpRequest();
+    post.onreadystatechange = (evt) => {
+        if (post.readyState == 4 && post.status == 200) {
+            window.location = `${defaultURL}`;
+        }
+    }
+    post.open("post", `/character_creation`);
+    post.send(cleaned_data);
 }
 
 populateValues();
