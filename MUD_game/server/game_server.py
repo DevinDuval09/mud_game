@@ -121,7 +121,11 @@ class Router(sserv.StreamRequestHandler):
     def handle_post(self, url):
         if(url == "/character_creation"):
             character_data = self._parse_form(self.body)
-            print(character_data)
+            character_data["level"] = 1
+            #login character
+            #update state manager
+            #have engine create new character
+            #engine needs to add starting inventory, equipment, skills, proficiences, e
 
     def handle(self):
         self.startline = self.rfile.readline().decode("utf-8")

@@ -23,7 +23,9 @@ class GameStateManager:
             #get character and password and verify password
             #if password matches, toggle status to Active
             pass
-    def create_character(self, character, password, **kwargs):
+    def create_character(self, client_url, character, password, **kwargs):
         #hash password
         hashed = None
-        create_character(character, hashed, **kwargs)
+        new_character = create_character(character, hashed, **kwargs)
+        if new_character:
+            self.change_state(client_url, "ACTIVE")
