@@ -3,7 +3,6 @@
 
 # TODO: each Item subclass needs a unique fromId class method 
 from types import MethodType
-from ..utils.mongo import mongo
 from .Skills import *
 
 stats_list = [
@@ -46,26 +45,6 @@ class Item(object):
     def description(self):
         return f"a {self._description}."
 
-    def save(self):
-        with mongo:
-            collection = mongo.db["Items"]
-            save_dict = {
-                "number": self.number,
-                "description": self._description,
-                "skills": [skill.value() for skill in self.skills],
-                "general_proficiencies": [skill.value() for skill in self.general_proficiencies],
-                "specific_proficiencies": [skill.value() for skill in self.specific_proficiences],
-            }
-            for stat in stats_list:
-                if stat in dir(self):
-                    save_dict[stat] = getattr(self, stat)
-            update = collection.find_one({"number": self.number})
-            save_dict["item_type"] = type(self).__name__
-            if update:
-                collection.replace_one({"number": self.number}, save_dict)
-            else:
-                collection.insert_one(save_dict)
-
 
 class Container(Item):
     def __init__(
@@ -93,14 +72,6 @@ class Container(Item):
         self._open = True
         return f"You open the {self._description}. It contains {self.inventory}."
 
-    def save(self):
-        super().save()
-        with mongo:
-            inventory = [item.number for item in self.inventory]
-            mongo.db["Items"].update_one({"number": self.number}, {"$set": {"inventory": inventory}})
-
-
-
 class Equipment(Item):
     def __init__(
         self,
@@ -119,16 +90,6 @@ class Equipment(Item):
         self.slot = slot
         self.equipment_type=equipment_type
         self.equipment_class=equipment_class
-
-    def save(self):
-        super().save()
-        slot_update = {"slot": self.slot.value}
-        equipment_type_update = {"equipment_type": self.equipment_type.value}
-        equipment_class_update = {"equipment_class": self.equipment_class.value}
-        updates = [slot_update, equipment_class_update, equipment_type_update]
-        with mongo:
-            for update in updates:
-                mongo.db["Items"].update_one({"number": self.number}, {"$set": update})
 
 class Book(Item):
     def __init__(
@@ -206,31 +167,3 @@ class Book(Item):
                 message += "think it is a bit of a bore"
             message += "."
         return message
-
-
-def create_item_fromId(id: int) -> Item:
-    with mongo:
-        doc = mongo.db["Items"].find_one({"number": id})
-        item_type = doc.pop("item_type", None)
-        desc = doc.pop("description", None)
-        doc.pop("number", None)
-        if item_type == "Equipment":
-            slot = EquipmentSlots(doc.pop("slot", None))
-            item_type = EquipmentTypes(doc.pop("equipment_type", None))
-            item_class = EquipmentClasses(doc.pop("equipment_class", None))
-            return Equipment(id,
-                            desc,
-                            slot,
-                            equipment_type=item_type,
-                            equipment_class=item_class,
-                            **doc)
-        elif item_type == "Item":
-            return Item(id,
-                        desc,
-                        **doc)
-        elif item_type == "Container":
-            pass
-        elif item_type == "Book":
-            pass
-        else:
-            print(f"{item_type} not implemented.")
