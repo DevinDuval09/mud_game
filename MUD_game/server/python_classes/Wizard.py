@@ -8,6 +8,7 @@ class Wizard(Character):
                                         EquipmentTypes.LIGHT_CROSSBOW,
                                         EquipmentTypes.DARTS],
                          *args, **kwargs)
+        self.type = "Wizard"
     
     def recover(self):
         pass

@@ -12,7 +12,7 @@ class Character:
     def __init__(
         self,
         name: str,
-        spawn_room_number: int = 0,
+        room: int = 0,
         desc: str = "",
         STR: int = 0,
         DEX: int = 0,
@@ -30,7 +30,7 @@ class Character:
     *args,
     **kwargs):
         self.name = name
-        self.spawn_room = spawn_room_number
+        self.spawn_room = room
         self.description = desc
         self.strength = STR
         self.dexterity = DEX

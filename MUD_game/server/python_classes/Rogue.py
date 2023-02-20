@@ -10,6 +10,7 @@ class Rogue(Character):
                                        EquipmentTypes.LONG_SWORD,
                                        EquipmentTypes.RAPIERS]
                         *args, **kwargs)
+        self.type = "Rogue"
         self.expertise = [] #Skills enums
         self.number_sneak_attack_dice = ceil(self.level / 2)
 

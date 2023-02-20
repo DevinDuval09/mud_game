@@ -6,6 +6,7 @@ from .Items import create_item_fromId
 class Fighter(Character):
 
     def __init__(self, style, *args, **kwargs):
+        self.type = "Fighter"
         general_prof = []
         if "general_prof" in kwargs.keys():
             general_prof = kwargs.pop("general_prof")
