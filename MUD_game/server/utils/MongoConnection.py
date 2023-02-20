@@ -136,6 +136,8 @@ class MongoConnection:
 
     def save_character(self, character):
         self._save_object("Player", "name", character.name, character)
+    def verify_character(self, name):
+        return self._verify_docs("Player", name=name)
 
 
 
