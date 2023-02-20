@@ -125,6 +125,18 @@ class MongoConnection:
             if query.count() == 0:
                 collection.insert_one({**room_dict})
 
+    def _save_object(self, collection, id_name, id_val, **kwargs):
+        with self:
+            collection = self[collection]
+            existing_doc = collection.find_one({id_name: id_val})
+            if existing_doc:
+                collection.replace_one({id_name: id_val}, kwargs)
+            else:
+                collection.insert_one({**kwargs})
+
+    def save_character(self, character):
+        self._save_object("Player", "name", character.name, character)
+
 
 
 
