@@ -1,4 +1,4 @@
-from .mongo import mongo
+from .DatabaseConnection import DatabaseConnect
 from ..python_classes.Room import Room
 from ..python_classes.Items import *
 
