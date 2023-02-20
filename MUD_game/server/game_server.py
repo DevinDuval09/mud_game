@@ -4,7 +4,8 @@ import json
 import re
 from .utils.MudGameEngine import MudGameEngine
 from .utils.GameStateManager import GameStateManager
-from .utils.ObjectGenerator import verify_password, character_exists
+from .utils.DatabaseConnection import DatabaseConnect
+from .utils.MongoConnection import MongoConnection
 
 class Router(sserv.StreamRequestHandler):
     def _create_header(self, http_code:int, file_path:str, content_type=None)->str:
@@ -60,7 +61,7 @@ class Router(sserv.StreamRequestHandler):
         elif url.find("verify:") > -1:
             print("Verifying name availability")
             _, name = url.split(":")
-            response = {"name_available": not character_exists(name.strip())}
+            response = {"name_available": not self.server.db.verify_character(name.strip())}
             self._send_json(response)
         elif url.find("command:") > -1:
             self.process_command(url[url.find(":") + 1:])
@@ -167,15 +168,22 @@ class Router(sserv.StreamRequestHandler):
 
 
 class Server(sserv.TCPServer):
-    def __init__(self, server:str, port:int=50000):
+    def __init__(self,
+                server:str,
+                port:int=50000,
+                database_server="127.0.0.1",
+                database_port=27017,
+                db_name="Realms_MUD",
+                db_tables=["Players", "Items", "Rooms", "Npcs"]):
         super().__init__((server, port), Router)
-        self.engine = MudGameEngine()
         self.state_manager = GameStateManager()
+        self.db = DatabaseConnect(database_server, database_port, db_name=db_name, table_names=db_tables, interface=MongoConnection)
+        self.engine = MudGameEngine(self.db)
         self.server = server
         self.port = port
         self.html = "../index.html"
         self.stylesheet = "../client/css/stylesheet.css"
     
 def startServer():
-    server = Server('127.0.0.1', 50000)
+    server = Server("127.0.0.1", 50000)
     server.serve_forever()
