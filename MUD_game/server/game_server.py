@@ -122,11 +122,14 @@ class Router(sserv.StreamRequestHandler):
     def handle_post(self, url):
         if(url == "/character_creation"):
             character_data = self._parse_form(self.body)
-            character_data["level"] = 1
-            #login character
+            if self.server.db.verify_character(character_data["name"]):
+                raise AttributeError(f"{character_data['name']} already exists in database.")
             #update state manager
+            self.server.state_manager.change_state(self.client_address, "ACTIVE")
             #have engine create new character
             #engine needs to add starting inventory, equipment, skills, proficiences, e
+            new_character = self.server.engine.create_new_character(character_data)
+            self.server.db.create_new_character(new_character, character_data["password"])
 
     def handle(self):
         self.startline = self.rfile.readline().decode("utf-8")
