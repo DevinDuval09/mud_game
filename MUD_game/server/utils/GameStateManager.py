@@ -17,15 +17,3 @@ class GameStateManager:
         if user not in self._users.keys():
             raise KeyError(f"{user} is not in GameStateManager")
         return self._users[user]
-    def login(self, character, password):
-        #hash password
-        with mongo:
-            #get character and password and verify password
-            #if password matches, toggle status to Active
-            pass
-    def create_character(self, client_url, character, password, **kwargs):
-        #hash password
-        hashed = None
-        new_character = create_character(character, hashed, **kwargs)
-        if new_character:
-            self.change_state(client_url, "ACTIVE")
