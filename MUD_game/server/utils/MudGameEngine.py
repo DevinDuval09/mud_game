@@ -1,10 +1,8 @@
-from .mongo import mongo
+from .DatabaseConnection import DatabaseConnect
 from ..python_classes.Fighter import Fighter
 from ..python_classes.Wizard import Wizard
 from ..python_classes.Rogue import Rogue
 from ..python_classes.Room import Room
-from ..python_classes.utils import create_character_fromId
-from ..python_classes.Items import create_item_fromId
 from ..python_classes.Items import Item
 
 '''
@@ -12,11 +10,12 @@ ObjectManager is here to track the state of active objects on the server.
 '''
 class MudGameEngine:
 
-    def __init__(self):
+    def __init__(self, database:DatabaseConnect):
         #characters logged into this instance
         self.active_characters = []
         #rooms that have been generated for this instance
         self.active_rooms={}
+        self.db_connect = database
 
     def create_character(self, name:str, *args, char_class=None, **kwargs):
         doc = None
