@@ -38,4 +38,6 @@ class DatabaseConnect:
         self.connection = interface(host, port, db_name, table_names)
     def save_character(self, character):
         self.connection.save_character(character)
+    def verify_character(self, name):
+        return self.connection.verify_character(name)
      
