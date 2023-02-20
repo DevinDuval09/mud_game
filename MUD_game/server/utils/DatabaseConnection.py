@@ -1,9 +1,13 @@
-from .mongo import mongo
+from .MongoConnection import MongoConnection
 from ..python_classes import *
 
 '''
     Wrapper class for specific database interfaces.
     Required interface methods:
+    __enter__ -allows database connection to be used as a context manager
+    __exit__ -closes database connection when context it exited
+    connect - connect to database outside of a context manager
+    close - closes connection outside of a context manager
     **get_xxx**
         The get methods all retrieve the necessary data from the database and
         return an existing persistant object or throw an error
@@ -30,8 +34,8 @@ from ..python_classes import *
     as appropriate
 '''
 class DatabaseConnect:
-    def __init__(self, interface=mongo):
-        self.connection = interface
+    def __init__(self, host:str, port:int, db_name:str, table_names:list, *args, interface=MongoConnection, **kwargs):
+        self.connection = interface(host, port, db_name, table_names)
     def save_character(self, character):
-        self.connnection.save_character(character)
+        self.connection.save_character(character)
      
