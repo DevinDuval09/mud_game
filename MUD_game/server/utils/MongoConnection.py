@@ -4,6 +4,22 @@ import pymongo as pm
 
 class MongoConnection:
     """mongodb connection"""
+    _CHARACTER_DICT_KEYS = [
+        "name",
+        "strength",
+        "dexterity",
+        "constitution",
+        "wisdom",
+        "intelligence",
+        "charisma",
+        "room",
+        "description",
+        "level",
+        "general_proficiences",
+        "specific_proficiences",
+        "skills",
+        "type",
+    ]
 
     def __init__(
         self, host="127.0.0.1", port=27017, db_name=None, related_collections=[]
@@ -124,23 +140,41 @@ class MongoConnection:
                 collection.replace_one({"number": self.number}, room_dict)
             if query.count() == 0:
                 collection.insert_one({**room_dict})
+    def _character_to_dict(self, character, include_password=False):
+        character_dict = {}
+        for key in MongoConnection._CHARACTER_DICT_KEYS:
+            if key in dir(character):
+                character_dict[key] = getattr(character, key)
+            else:
+                character_dict[key] = None
+        if include_password:
+            for key in ["password", "salt"]:
+                if key not in dir(character):
+                    raise AttributeError(f"{key} property needs to exist when include_password flag is true.")
+                character_dict[key] = getattr(character, key)
+        return character_dict
 
-    def _save_object(self, collection, id_name, id_val, **kwargs):
+    def _save_object(self, table, id_name, id_val, **kwargs):
         with self:
-            collection = self[collection]
+            collection = self.db[table]
             existing_doc = collection.find_one({id_name: id_val})
             if existing_doc:
                 collection.replace_one({id_name: id_val}, kwargs)
             else:
                 collection.insert_one({**kwargs})
+    def _get_doc(self, collection, id_key, id_val):
+        with self:
+            return self.db[collection].find_one({id_key: id_val})
 
-    def save_character(self, character):
-        self._save_object("Player", "name", character.name, character)
+    def save_character(self, character, include_password=False):
+        character_dict = self._character_to_dict(character, include_password)
+        self._save_object("Player", "name", character.name, **character_dict)
     def verify_character(self, name):
         return self._verify_docs("Player", name=name)
-
-
-
+    def get_character(self, name):
+        return self._get_doc("Player", "name", name)
+    def get_room(self, room_number):
+        return self._get_doc("Room", "number", room_number)
 
 
 mongo = MongoConnection(
