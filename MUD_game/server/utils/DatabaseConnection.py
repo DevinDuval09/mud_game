@@ -40,8 +40,9 @@ class DatabaseConnect:
     app_iterations = 100
     def __init__(self, host:str, port:int, db_name:str, table_names:list, *args, interface=MongoConnection, **kwargs):
         self.connection = interface(host, port, db_name, table_names)
-    def _salt_generator(self):
-        size = random.randint(5, 12)
+    def _salt_generator(self, size=None):
+        if not size:
+            size = random.randint(5, 12)
         characters = string.ascii_letters + string.digits + string.punctuation
         return ''.join(random.choice(characters) for i in range(size))
 

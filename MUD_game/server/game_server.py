@@ -2,32 +2,48 @@ import os.path
 import socketserver as sserv
 import json
 import re
+from http import cookies
 from .utils.MudGameEngine import MudGameEngine
 from .utils.GameStateManager import GameStateManager
 from .utils.DatabaseConnection import DatabaseConnect
 from .utils.MongoConnection import MongoConnection
 
 class Router(sserv.StreamRequestHandler):
-    def _create_header(self, http_code:int, file_path:str, content_type=None)->str:
+    _http_codes = {
+        200: "OK",
+        308: "Permanent Redirect",
+        404: "Not Found"
+    }
+    def _create_header(self, http_code:int, file_path:str, content_type=None, _cookies:cookies.SimpleCookie=None, **kwargs)->str:
         header = "HTTP/1.1 "
         if not content_type:
             content_type = "text/" + file_path[file_path.rfind(".") + 1: len(file_path)]
-        if http_code == 200:
-            header = header + '200 OK\r\n'
+        header = header + f'{http_code} {Router._http_codes[http_code]}\r\n'
         header = header + f'Content-Type: {content_type}\r\n'
-        header = header + f'Connection: keep-alive\r\n\r\n'
+        header = header + f'Connection: keep-alive\r\n'
+        if kwargs:
+            for key, val in kwargs.items():
+                header = header + f"{key}: {val}\r\n"
+        if _cookies:
+            print(f"cookies being sent: {_cookies.output()}")
+            header = header + _cookies.output()
+        header = header + "\r\n"
+        print(header)
 
         return header
 
-    def _send_file(self, header:str, filepath:str)->None:
+    def _send_file(self, header:str, filepath:str, _cookies:cookies.SimpleCookie=None, **kwargs)->None:
         response = ''
-        header = self._create_header(200, filepath)
-        dir = os.path.abspath(os.path.dirname(__file__))
-        file_path = os.path.join(dir, filepath)
-        with open(file_path) as file:
-            lines = file.readlines()
-            encoded_lines = "".join(lines)
-            response = (header +  encoded_lines + '\r\n').encode("utf-8")
+        encoded_lines = ''
+        if not header:
+            header = self._create_header(200, filepath, _cookies, **kwargs)
+        if filepath:
+            dir = os.path.abspath(os.path.dirname(__file__))
+            file_path = os.path.join(dir, filepath)
+            with open(file_path) as file:
+                lines = file.readlines()
+                encoded_lines = "".join(lines)
+        response = (header +  encoded_lines + '\r\n').encode("utf-8")
         self.request.sendall(response)
         #print(response.decode("utf-8"))
 
@@ -48,11 +64,17 @@ class Router(sserv.StreamRequestHandler):
     def handle_get(self, url):
         dir = os.path.abspath(os.path.dirname(__file__))
         filepath = os.path.join(dir, f"../{url}")
-        if url == "/" and self.server.state_manager.get_status(self.client_address) == "LOGGED_OUT":
+        if (url == "/") and \
+            (self.client_address not in self.server.state_manager.users() or self.server.state_manager.get_status(self.client_address) == "LOGGED_OUT"):
             print("Sending login page")
             file_path = "../client/html/login.html"
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
+        elif url == "/" and self.server.server_manager.get_status(self.client_address) == "ACTIVE":
+            print("Sending game page")
+            file_path = "../index.html"
+            header = self._create_header(200, None, "text/html")
+            self._send_file(header, filepath)
         elif url == "/character_creation":
             print("Sending character creation page")
             file_path = "../client/html/character_creation.html"
@@ -76,14 +98,26 @@ class Router(sserv.StreamRequestHandler):
         _bytes = self.rfile.read(num_bytes)
         body = _bytes.decode("utf-8")
         return body
+    def _split_delineated_kv_pairs(self, pairs, delineator=";"):
+        kv_pairs = {}
+        split_pairs = pairs.split(delineator)
+        for line in split_pairs:
+            key, value = line.strip().split("=")
+            kv_pairs[key.strip()] = value.strip()
+        return kv_pairs
+
     def _read_headers(self):
         headers = {}
         if self.rfile.readable():
             while True:
                 chunk = self.rfile.readline().decode("utf-8")
+                print(f"chunk: {chunk}")
                 if len(chunk) > 0 and chunk != '\r\n':
                     header, values = chunk.split(":", 1)
-                    headers[header.strip()] = values.strip()
+                    if header.strip() == "Cookie":
+                        self.biscuits = self._split_delineated_kv_pairs(values)
+                    else:
+                        headers[header.strip()] = values.strip()
                 if chunk == '\r\n':
                     break
         return headers
@@ -124,16 +158,39 @@ class Router(sserv.StreamRequestHandler):
             character_data = self._parse_form(self.body)
             if self.server.db.verify_character(character_data["name"]):
                 raise AttributeError(f"{character_data['name']} already exists in database.")
-            #update state manager
-            self.server.state_manager.change_state(self.client_address, "ACTIVE")
             #have engine create new character
             #engine needs to add starting inventory, equipment, skills, proficiences, e
             new_character = self.server.engine.create_new_character(character_data)
             self.server.db.create_new_character(new_character, character_data["password"])
+            #header needs to send character name and session ID cookies
+            #character name needs to be stored by GameStateManager
+            biscuits = cookies.SimpleCookie()
+            biscuits["user"] = new_character.name
+            biscuits["session"] = self.server.db._salt_generator(12)
+            #update state manager
+            self.server.state_manager.add_user(new_character.name)
+            self.server.state_manager.change_state(new_character.name, "ACTIVE")
+            self._send_file(self._create_header(308, None, "text/html", biscuits, Location="/"), None)
+
 
     def handle(self):
+        self.biscuits = {}#cookies that will be set in self._read_headers
         self.startline = self.rfile.readline().decode("utf-8")
         self.headers = self._read_headers()
+        if self.biscuits:
+            cookie_keys = self.biscuits.keys()
+            #if user in self.server.sessions, validate session id
+            if "user" in cookie_keys:
+                user = self.biscuits["user"]
+                session = None
+                if "session" in cookie_keys:
+                    session = self.biscuits["session"]
+                if session and session != self.server.sessions[user]:
+                    #404 error or something
+                    pass
+                if user not in self.server.state_manager.get_users():
+                    self.server.state_manager.add_user(user)
+
         if "Content-Length" in self.headers.keys():
             self.body = self._read_body(self.headers["Content-Length"])
         else:
@@ -142,8 +199,10 @@ class Router(sserv.StreamRequestHandler):
         method = request[0]
         url = request[1]
         protocol = request[2]
-        if self.client_address not in self.server.state_manager.users():
-            self.server.state_manager.add_user(self.client_address)
+        #this doesn't work at all. Need to use the character name in the statemanager and validate
+        #the session id
+        #if self.client_address not in self.server.state_manager.users():
+        #    self.server.state_manager.add_user(self.client_address)
 
         if "HTTP" in protocol:
             if method.upper() == "GET":
@@ -186,6 +245,7 @@ class Server(sserv.TCPServer):
         self.port = port
         self.html = "../index.html"
         self.stylesheet = "../client/css/stylesheet.css"
+        self.sessions = {} #key: player character name; value: randomly generated session id
     
 def startServer():
     server = Server("127.0.0.1", 50000)
