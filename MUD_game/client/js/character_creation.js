@@ -137,7 +137,8 @@ const validateForm = (evt) => {
     }
     const post = new XMLHttpRequest();
     post.onreadystatechange = (evt) => {
-        if (post.readyState == 4 && post.status == 200) {
+        console.log("evt received for redirection")
+        if (post.readyState == 4 && post.status == 201) {
             console.log("redirecting");
             window.location = `/`;
         }

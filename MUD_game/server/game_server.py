@@ -7,10 +7,12 @@ from .utils.MudGameEngine import MudGameEngine
 from .utils.GameStateManager import GameStateManager
 from .utils.DatabaseConnection import DatabaseConnect
 from .utils.MongoConnection import MongoConnection
+from .utils.Authenticator import Authenticator
 
 class Router(sserv.StreamRequestHandler):
     _http_codes = {
         200: "OK",
+        201: "Created",
         308: "Permanent Redirect",
         404: "Not Found"
     }
@@ -25,10 +27,10 @@ class Router(sserv.StreamRequestHandler):
             for key, val in kwargs.items():
                 header = header + f"{key}: {val}\r\n"
         if _cookies:
-            print(f"cookies being sent: {_cookies.output()}")
             header = header + _cookies.output()
         header = header + "\r\n"
-        print(header)
+        #print("printing header:\n\n")
+        #print(header)
 
         return header
 
@@ -64,8 +66,7 @@ class Router(sserv.StreamRequestHandler):
     def handle_get(self, url):
         dir = os.path.abspath(os.path.dirname(__file__))
         filepath = os.path.join(dir, f"../{url}")
-        if (url == "/") and \
-            (self.client_address not in self.server.state_manager.users() or self.server.state_manager.get_status(self.client_address) == "LOGGED_OUT"):
+        if (url == "/login"):
             print("Sending login page")
             file_path = "../client/html/login.html"
             header = self._create_header(200, file_path)
@@ -92,7 +93,6 @@ class Router(sserv.StreamRequestHandler):
             file_path = f"../{url}"
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
-        #else 404 error
     def _read_body(self, size):
         num_bytes = int(size)
         _bytes = self.rfile.read(num_bytes)
@@ -111,7 +111,7 @@ class Router(sserv.StreamRequestHandler):
         if self.rfile.readable():
             while True:
                 chunk = self.rfile.readline().decode("utf-8")
-                print(f"chunk: {chunk}")
+                #print(f"chunk: {chunk}")
                 if len(chunk) > 0 and chunk != '\r\n':
                     header, values = chunk.split(":", 1)
                     if header.strip() == "Cookie":
@@ -170,27 +170,15 @@ class Router(sserv.StreamRequestHandler):
             #update state manager
             self.server.state_manager.add_user(new_character.name)
             self.server.state_manager.change_state(new_character.name, "ACTIVE")
-            self._send_file(self._create_header(308, None, "text/html", biscuits, Location="/"), None)
+            self._send_file(self._create_header(201, None, "text/html", biscuits, Location="/"), None)
 
-
+    '''
+    First thing that handles a request. It starts by reading it.
+    '''
     def handle(self):
         self.biscuits = {}#cookies that will be set in self._read_headers
         self.startline = self.rfile.readline().decode("utf-8")
         self.headers = self._read_headers()
-        if self.biscuits:
-            cookie_keys = self.biscuits.keys()
-            #if user in self.server.sessions, validate session id
-            if "user" in cookie_keys:
-                user = self.biscuits["user"]
-                session = None
-                if "session" in cookie_keys:
-                    session = self.biscuits["session"]
-                if session and session != self.server.sessions[user]:
-                    #404 error or something
-                    pass
-                if user not in self.server.state_manager.get_users():
-                    self.server.state_manager.add_user(user)
-
         if "Content-Length" in self.headers.keys():
             self.body = self._read_body(self.headers["Content-Length"])
         else:
@@ -199,16 +187,30 @@ class Router(sserv.StreamRequestHandler):
         method = request[0]
         url = request[1]
         protocol = request[2]
-        #this doesn't work at all. Need to use the character name in the statemanager and validate
-        #the session id
-        #if self.client_address not in self.server.state_manager.users():
-        #    self.server.state_manager.add_user(self.client_address)
-
-        if "HTTP" in protocol:
+        print(f"Received {method} request for {url} endpoint.")
+        #if request is for a valid file, send the file
+        dir = os.path.abspath(os.path.dirname(__file__))
+        filepath = os.path.join(dir, f"../{url}")
+        if os.path.isfile(f"{filepath}") and method.upper() == "GET":
+            print(f"Sending requested file {url}")
+            file_path = f"../{url}"
+            header = self._create_header(200, file_path)
+            self._send_file(header, file_path)
+            return
+        #authenticate request
+        if not self.server.authenticator.is_authenticated(self.biscuits):
             if method.upper() == "GET":
-                self.handle_get(url)
-            if method.upper() == "POST":
-                self.handle_post(url)
+                print(f"Authentication failed; rerouting to login in page.")
+                #redirect to login page
+                self.handle_get("/login")
+            elif method.upper() == "POST" and url == "/login":
+                self.server.authenticator.get_credentials(self._parse_form(self.body))
+        else:
+            if "HTTP" in protocol:
+                if method.upper() == "GET":
+                    self.handle_get(url)
+                if method.upper() == "POST":
+                    self.handle_post(url)
     
     @staticmethod
     def _request_to_dict(request:str)->dict:
@@ -238,13 +240,18 @@ class Server(sserv.TCPServer):
                 db_name="Realms_MUD",
                 db_tables=["Players", "Items", "Rooms", "Npcs"]):
         super().__init__((server, port), Router)
+        print(f"Serving at {server} on port {port}...")
         self.state_manager = GameStateManager()
         self.db = DatabaseConnect(database_server, database_port, db_name=db_name, table_names=db_tables, interface=MongoConnection)
+        print(f"Connected to database {db_name}...")
         self.engine = MudGameEngine(self.db)
+        print(f"GameEngine started...")
         self.server = server
         self.port = port
         self.html = "../index.html"
         self.stylesheet = "../client/css/stylesheet.css"
+        self.authenticator = Authenticator(self.db, self.state_manager)
+        print(f"Authenticator started...")
         self.sessions = {} #key: player character name; value: randomly generated session id
     
 def startServer():

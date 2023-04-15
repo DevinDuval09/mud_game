@@ -60,9 +60,11 @@ class DatabaseConnect:
         character.password = db_password
         self.save_character(character, True)
     def verify_password(self, name, password):
-        salt = self.connection.get_salt(name)
-        db_password = self.connection.get_password(name)
-        if self._hasher(password, salt) != db_password:
+        user_dict = self.connection.get_character(name)
+        print(user_dict)
+        print(f"user: {user_dict['name']} password: {user_dict['password']} provided password: {password}")
+        #problem is how to handle getting the salt to verify the password
+        if self._hasher(password) != user_dict["password"]:
             return False
         return True
     def get_room(self, room_number):
