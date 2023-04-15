@@ -46,7 +46,7 @@ class DatabaseConnect:
         characters = string.ascii_letters + string.digits + string.punctuation
         return ''.join(random.choice(characters) for i in range(size))
 
-    def _hasher(self, password, salt):
+    def _hasher(self, password, salt=b''):
         return hashlib.pbkdf2_hmac("sha256", password.encode(), salt, DatabaseConnect.app_iterations)
 
     def save_character(self, character, include_password=False):
