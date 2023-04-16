@@ -209,11 +209,9 @@ const objectRouter = class {
  */
 const connectionHandler = class {
     constructor(){
-        this.inputSocket = null;
-        this.outputSocket = null;
         this.parser = new objectRouter();
-        this.inputHandler = null;
         this.input = document.querySelector("input[type=text]");
+        this.serverState = {}
     }
 
     sendCommand(evt) {
@@ -231,13 +229,38 @@ const connectionHandler = class {
         }
         this.input.value = null;
     }
+
+    getServerState() {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = (evt) => {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                this.serverState = JSON.parse(xhr.responseText)
+                console.log(`serverState: ${this.serverState}`)
+            }
+        }
+
+        xhr.open("GET", `${defaultURL}/state/${user}/all`)
+        xhr.send();
+    }
 }
 
-const connector = new connectionHandler();
+
+const handler = new connectionHandler()
+handler.parser.addPanel(playerLog);
+handler.parser.addPanel(roomDescription);
+handler.parser.addPanel(roomObjects);
+handler.parser.addPanel(roomCharacters);
+handler.parser.addPanel(playerInventory);
+handler.parser.addPanel(playerHealth);
+handler.parser.addPanel(playerMana);
+handler.parser.addPanel(playerEquipment);
+
 const form = document.querySelector("form");
 form.addEventListener("submit", (evt) => {
     evt.preventDefault();
     evt.stopPropagation();
-    connector.sendCommand(evt);
+    handler.sendCommand(evt);
     }
 );
+
+window.onload = handler.getServerState
