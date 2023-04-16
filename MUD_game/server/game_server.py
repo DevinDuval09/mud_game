@@ -18,10 +18,11 @@ class Router(sserv.StreamRequestHandler):
     }
     def _create_header(self, http_code:int, file_path:str, content_type=None, _cookies:cookies.SimpleCookie=None, **kwargs)->str:
         header = "HTTP/1.1 "
-        if not content_type:
+        if not content_type and file_path:
             content_type = "text/" + file_path[file_path.rfind(".") + 1: len(file_path)]
         header = header + f'{http_code} {Router._http_codes[http_code]}\r\n'
-        header = header + f'Content-Type: {content_type}\r\n'
+        if content_type:
+            header = header + f'Content-Type: {content_type}\r\n'
         header = header + f'Connection: keep-alive\r\n'
         if kwargs:
             for key, val in kwargs.items():

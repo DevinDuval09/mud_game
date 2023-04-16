@@ -35,7 +35,7 @@ class Authenticator:
         session = cookies["session"]
         if user not in self.sessions.keys():
             return False
-        if session != f'"{self.sessions[user]}"':
+        if session != self.sessions[user]:
             return False
         return True
 
