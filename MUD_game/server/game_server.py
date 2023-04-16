@@ -42,6 +42,7 @@ class Router(sserv.StreamRequestHandler):
         if filepath:
             dir = os.path.abspath(os.path.dirname(__file__))
             file_path = os.path.join(dir, filepath)
+            print(file_path)
             with open(file_path) as file:
                 lines = file.readlines()
                 encoded_lines = "".join(lines)
@@ -71,11 +72,11 @@ class Router(sserv.StreamRequestHandler):
             file_path = "../client/html/login.html"
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
-        elif url == "/" and self.server.server_manager.get_status(self.client_address) == "ACTIVE":
+        elif url == "/" and self.server.state_manager.get_status(self.biscuits["user"]) == "ACTIVE":
             print("Sending game page")
-            file_path = "../index.html"
-            header = self._create_header(200, None, "text/html")
-            self._send_file(header, filepath)
+            file_path = "../client/html/index.html"
+            header = self._create_header(200, file_path)
+            self._send_file(header, file_path)
         elif url == "/character_creation":
             print("Sending character creation page")
             file_path = "../client/html/character_creation.html"
@@ -102,7 +103,7 @@ class Router(sserv.StreamRequestHandler):
         kv_pairs = {}
         split_pairs = pairs.split(delineator)
         for line in split_pairs:
-            key, value = line.strip().split("=")
+            key, value = line.strip().split("=", 1)
             kv_pairs[key.strip()] = value.strip()
         return kv_pairs
 
