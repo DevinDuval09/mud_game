@@ -178,6 +178,7 @@ class Router(sserv.StreamRequestHandler):
     First thing that handles a request. It starts by reading it.
     '''
     def handle(self):
+        #set request cookies, headers, and body
         self.biscuits = {}#cookies that will be set in self._read_headers
         self.startline = self.rfile.readline().decode("utf-8")
         self.headers = self._read_headers()
@@ -190,7 +191,7 @@ class Router(sserv.StreamRequestHandler):
         url = request[1]
         protocol = request[2]
         print(f"Received {method} request for {url} endpoint.")
-        #if request is for a valid file, send the file
+        #if request is for a valid file, send the file without authentication
         dir = os.path.abspath(os.path.dirname(__file__))
         filepath = os.path.join(dir, f"../{url}")
         if os.path.isfile(f"{filepath}") and method.upper() == "GET":
@@ -199,13 +200,22 @@ class Router(sserv.StreamRequestHandler):
             header = self._create_header(200, file_path)
             self._send_file(header, file_path)
             return
+        #if request url is /state/{user}/{requested data}, request game engine retrieves data
+        match = re.search(r'/state/([A-Za-z\s]+)/([a-z])', url)
+        if match:
+            print(f"Server: matched url {url}")
+            print(match.groups)
+            user, requested_data = match.groups
+            self.server.engine.get_state(user, requested_data)
+            return
         #authenticate request
         if not self.server.authenticator.is_authenticated(self.biscuits):
             if method.upper() == "GET":
+                #if authentication fails for get request, reroute to login
                 print(f"Authentication failed; rerouting to login in page.")
-                #redirect to login page
                 self.handle_get("/login")
             elif method.upper() == "POST" and url == "/login":
+                #accept post to /login without authentication
                 data = self._parse_form(self.body)
                 if self.server.authenticator.valid_credentials(data):
                     #get cookies from authenticator
@@ -215,10 +225,11 @@ class Router(sserv.StreamRequestHandler):
                     header = self._create_header(200, None, _cookies=biscuits)
                     self._send_file(header, None)
                 else:
-                    #return 401 error
+                    #return 401 error and return login page
                     self.handle_get("/login")
 
         else:
+            #if authentication passes, process the request
             print(f"Received {method} request from {self.biscuits['user']} for {url}")
             if "HTTP" in protocol:
                 if method.upper() == "GET":

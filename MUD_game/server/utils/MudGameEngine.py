@@ -76,5 +76,8 @@ class MudGameEngine:
             self.active_rooms[0] = self.db_connect.get_room(0)
         return new_character
 
+    def get_state(self, user:str, data:str):
+        print(f"Engine: request received from {user} for {data}")
+
 
 

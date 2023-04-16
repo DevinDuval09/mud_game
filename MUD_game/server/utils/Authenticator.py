@@ -30,12 +30,15 @@ class Authenticator:
         cookie_keys = cookies.keys()
         #if user in self.server.sessions, validate session id
         if ("user" not in cookie_keys) or ("session" not in cookie_keys):
+            print("Authentication failed: missing key")
             return False
         user = cookies["user"]
         session = cookies["session"]
         if user not in self.sessions.keys():
+            print(f"Authentication failed: {user} not a key in sessions {self.sessions}")
             return False
         if session != self.sessions[user]:
+            print(f"Authentication failed: provided session {session} does not match expected session {self.sessions[user]}")
             return False
         return True
 
@@ -60,8 +63,8 @@ class Authenticator:
         return ''.join(random.choice(characters) for i in range(size))
     def generate_session_cookies(self, biscuits, user):
         session_id = self._create_session_id()
-        self.sessions[user] = session_id
         biscuits["session"] = session_id
+        self.sessions[user] = session_id
         expiration = dt.datetime.utcnow() + dt.timedelta(minutes=5)
         biscuits["session"]["expires"] = expiration.strftime("%a, %d %b %Y %H:%M:%S GMT")
         return biscuits
