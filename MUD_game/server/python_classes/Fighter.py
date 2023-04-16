@@ -1,17 +1,16 @@
 from .Skills import *
 from .Character import Character
 from .Character import EquipmentSlots
-from .Items import create_item_fromId
 #TODO: skills and proficiencies aren't saving correctly
 class Fighter(Character):
 
-    def __init__(self, style, *args, **kwargs):
+    def __init__(self, *args, style="dueling", **kwargs):
         self.type = "Fighter"
         general_prof = []
         if "general_prof" in kwargs.keys():
-            general_prof = kwargs.pop("general_prof")
+            general_proficiences = kwargs.pop("general_prof")
         else:
-            general_prof=[EquipmentClasses.SIMPLE_WEAPONS,
+            general_proficiences=[EquipmentClasses.SIMPLE_WEAPONS,
                           EquipmentClasses.MARTIAL_WEAPONS,
                           EquipmentClasses.LIGHT_ARMOR,
                           EquipmentClasses.MEDIUM_ARMOR,

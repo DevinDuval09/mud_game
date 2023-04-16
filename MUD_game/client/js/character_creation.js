@@ -137,8 +137,10 @@ const validateForm = (evt) => {
     }
     const post = new XMLHttpRequest();
     post.onreadystatechange = (evt) => {
-        if (post.readyState == 4 && post.status == 200) {
-            window.location = `${defaultURL}`;
+        console.log("evt received for redirection")
+        if (post.readyState == 4 && post.status == 201) {
+            console.log("redirecting");
+            window.location = `/`;
         }
     }
     post.open("post", `/character_creation`);
@@ -148,3 +150,4 @@ const validateForm = (evt) => {
 populateValues();
 document.querySelector("form").addEventListener("submit", validateForm);
 document.getElementById("character-name").addEventListener("change", verifyNameFromChange);
+console.log(document.cookie);

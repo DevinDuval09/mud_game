@@ -1,5 +1,8 @@
 from .MongoConnection import MongoConnection
 from ..python_classes import *
+import hashlib
+import random
+import string
 
 '''
     Wrapper class for specific database interfaces.
@@ -34,10 +37,33 @@ from ..python_classes import *
     as appropriate
 '''
 class DatabaseConnect:
+    app_iterations = 100
     def __init__(self, host:str, port:int, db_name:str, table_names:list, *args, interface=MongoConnection, **kwargs):
         self.connection = interface(host, port, db_name, table_names)
-    def save_character(self, character):
-        self.connection.save_character(character)
+    def _salt_generator(self, size=None):
+        if not size:
+            size = random.randint(5, 12)
+        characters = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(random.choice(characters) for i in range(size))
+
+    def _hasher(self, password, salt=""):
+        return hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), DatabaseConnect.app_iterations)
+
+    def save_character(self, character, include_password=False):
+        self.connection.save_character(character, include_password)
     def verify_character(self, name):
         return self.connection.verify_character(name)
-     
+    def create_new_character(self, character, password):
+        salt = self._salt_generator()
+        db_password = self._hasher(password, salt)
+        character.salt = salt
+        character.password = db_password
+        self.save_character(character, True)
+    def verify_password(self, name, password):
+        user_dict = self.connection.get_character(name)
+        salt = user_dict["salt"].decode("utf-8")
+        if self._hasher(password, salt) != user_dict["password"]:
+            return False
+        return True
+    def get_room(self, room_number):
+        return self.connection.get_room(room_number)
