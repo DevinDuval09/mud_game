@@ -211,7 +211,7 @@ class Router(sserv.StreamRequestHandler):
                     print(f"{data['username']} has logged in.")
                     biscuits = self.server.authenticator.get_credentials(data["username"])
                     #redirect to main page
-                    header = self._create_header(200, "../index.html", "text/html", biscuits)
+                    header = self._create_header(200, None, _cookies=biscuits)
                     self._send_file(header, None)
                 else:
                     #return 401 error
