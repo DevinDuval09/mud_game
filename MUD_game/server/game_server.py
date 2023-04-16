@@ -207,15 +207,17 @@ class Router(sserv.StreamRequestHandler):
                 data = self._parse_form(self.body)
                 if self.server.authenticator.valid_credentials(data):
                     #get cookies from authenticator
+                    print(f"{data['username']} has logged in.")
                     biscuits = self.server.authenticator.get_credentials(data["username"])
                     #redirect to main page
                     header = self._create_header(200, "../index.html", "text/html", biscuits)
-                    self._send_file(header, "../index.html")
+                    self._send_file(header, None)
                 else:
                     #return 401 error
                     self.handle_get("/login")
 
         else:
+            print(f"Received {method} request from {self.biscuits['user']} for {url}")
             if "HTTP" in protocol:
                 if method.upper() == "GET":
                     self.handle_get(url)

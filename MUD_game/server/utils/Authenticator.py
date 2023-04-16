@@ -24,15 +24,18 @@ class Authenticator:
     Checks that the given cookies have all the proper credentials
     '''
     def is_authenticated(self, cookies:dict) -> bool:
-            cookie_keys = cookies.keys()
-            #if user in self.server.sessions, validate session id
-            if ("user" not in cookie_keys) or ("session" not in cookie_keys):
-                return False
-            user = cookies["user"]
-            session = cookies["session"]
-            if session != self.sessions[user]:
-                return False
-            return True
+        print(f"Authenticator received cookies: {cookies}")
+        cookie_keys = cookies.keys()
+        #if user in self.server.sessions, validate session id
+        if ("user" not in cookie_keys) or ("session" not in cookie_keys):
+            return False
+        user = cookies["user"]
+        session = cookies["session"]
+        if user not in self.sessions.keys():
+            return False
+        if session != self.sessions[user]:
+            return False
+        return True
 
     def valid_credentials(self, data):
         print(f"body sent to Authenticator: {data}")
@@ -50,4 +53,5 @@ class Authenticator:
         biscuits["session"]["expires"] = expiration.strftime("%a, %d %b %Y %H:%M:%S GMT")
         self.state_manager.add_user(user)
         self.state_manager.change_state(user, "ACTIVE")
+        self.sessions[user] = session_id
         return biscuits

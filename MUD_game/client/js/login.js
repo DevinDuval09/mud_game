@@ -9,9 +9,9 @@ const login = (evt) => {
     console.log(raw_data.get("username"))
     const xhr = new XMLHttpRequest();
     xhr.onreadystatechange = () => {
-        if(xhr.readState == 4 && xhr.status == 200) {
+        if(xhr.readyState == 4 && xhr.status == 200) {
             //update error boxes OR redirect to appropriate page
-            console.log(xhr.response);
+            window.location.href = `http://${defaultURL}:${defaultPort}/`;
         }
     }
     xhr.open("POST", LOGIN);
