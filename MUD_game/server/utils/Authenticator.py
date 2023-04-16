@@ -1,5 +1,7 @@
 from .DatabaseConnection import DatabaseConnect
 from .GameStateManager import GameStateManager
+from http.cookies import SimpleCookie
+import datetime as dt
 
 '''
 Class for authenticating players. This class will:
@@ -39,5 +41,13 @@ class Authenticator:
         return self.db.verify_password(user, password)
     def assign_session(self):
         pass
-    def generate_cookies(self):
-        pass
+    def get_credentials(self, user):
+        biscuits = SimpleCookie()
+        biscuits["user"] = user
+        session_id = self.db._salt_generator(12)
+        biscuits["session"] = session_id
+        expiration = dt.datetime.utcnow() + dt.timedelta(minutes=5)
+        biscuits["session"]["expires"] = expiration.strftime("%a, %d %b %Y %H:%M:%S GMT")
+        self.state_manager.add_user(user)
+        self.state_manager.change_state(user, "ACTIVE")
+        return biscuits

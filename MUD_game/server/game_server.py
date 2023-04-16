@@ -204,10 +204,13 @@ class Router(sserv.StreamRequestHandler):
                 #redirect to login page
                 self.handle_get("/login")
             elif method.upper() == "POST" and url == "/login":
-                if self.server.authenticator.validate_credentials(self._parse_form(self.body)):
+                data = self._parse_form(self.body)
+                if self.server.authenticator.valid_credentials(data):
                     #get cookies from authenticator
+                    biscuits = self.server.authenticator.get_credentials(data["username"])
                     #redirect to main page
-                    pass
+                    header = self._create_header(200, "../index.html", "text/html", biscuits)
+                    self._send_file(header, "../index.html")
                 else:
                     #return 401 error
                     self.handle_get("/login")
