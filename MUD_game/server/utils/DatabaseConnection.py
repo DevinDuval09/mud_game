@@ -46,25 +46,23 @@ class DatabaseConnect:
         characters = string.ascii_letters + string.digits + string.punctuation
         return ''.join(random.choice(characters) for i in range(size))
 
-    def _hasher(self, password, salt=b''):
-        return hashlib.pbkdf2_hmac("sha256", password.encode(), salt, DatabaseConnect.app_iterations)
+    def _hasher(self, password, salt=""):
+        return hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), DatabaseConnect.app_iterations)
 
     def save_character(self, character, include_password=False):
         self.connection.save_character(character, include_password)
     def verify_character(self, name):
         return self.connection.verify_character(name)
     def create_new_character(self, character, password):
-        salt = self._salt_generator().encode()
+        salt = self._salt_generator()
         db_password = self._hasher(password, salt)
         character.salt = salt
         character.password = db_password
         self.save_character(character, True)
     def verify_password(self, name, password):
         user_dict = self.connection.get_character(name)
-        print(user_dict)
-        print(f"user: {user_dict['name']} password: {user_dict['password']} provided password: {password}")
-        #problem is how to handle getting the salt to verify the password
-        if self._hasher(password) != user_dict["password"]:
+        salt = user_dict["salt"].decode("utf-8")
+        if self._hasher(password, salt) != user_dict["password"]:
             return False
         return True
     def get_room(self, room_number):

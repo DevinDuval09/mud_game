@@ -32,15 +32,11 @@ class Authenticator:
                 return False
             return True
 
-    def get_credentials(self, data):
-        print(f"body received from Authenticator: {data}")
+    def valid_credentials(self, data):
+        print(f"body sent to Authenticator: {data}")
         user = data["username"]
         password = data["password"]
-        print(f"password check result: {self.db.verify_password(user, password)}")
-        if self.db.verify_password(user, password):
-            pass
-        else:
-            pass
+        return self.db.verify_password(user, password)
     def assign_session(self):
         pass
     def generate_cookies(self):
